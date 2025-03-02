@@ -717,11 +717,11 @@ structure for monitor data
 .SS "typedef struct \fBRGFW_monitorMode\fP \fBRGFW_monitorMode\fP"
 
 .SS "typedef void \fBRGFW_mouse\fP"
-loads mouse icon from bitmap (similar to RGFW_window_setIcon)\&. icon NOT resized by default 
+loads mouse icon from bitmap (similar to RGFW_window_setIcon)\&. Icon NOT resized by default 
 .SS "typedef void* \fBRGFW_thread\fP"
 thread type for windows 
 .SS "typedef struct \fBRGFW_window\fP \fBRGFW_window\fP"
-Window structure for managing the window 
+window structure for managing the window 
 .SS "typedef uint16_t \fBu16\fP"
 
 .SS "typedef uint32_t \fBu32\fP"
@@ -741,9 +741,9 @@ Optional arguments for making a windows < the window doesn't have border
 .PP
 < the window supports drag and drop
 .PP
-the window should hide the mouse or not (can be toggled later on) using `RGFW_window_mouseShow
+the window should hide the mouse (can be toggled later on using \fCRGFW_window_mouseShow\fP)
 .PP
-< the window is transparent (only properly works on X11 and MacOS, although it's although for windows)
+< the window is transparent (only properly works on X11 and MacOS, although it's meant for for windows)
 .PP
 center the window on the screen
 .PP
