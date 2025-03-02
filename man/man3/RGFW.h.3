@@ -1,4 +1,4 @@
-.TH "RGFW.h" 3 "Sat Mar 1 2025" "RGFW" \" -*- nroff -*-
+.TH "RGFW.h" 3 "Sun Mar 2 2025" "RGFW" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -164,7 +164,7 @@ RGFW.h
 .RI "typedef int64_t \fBi64\fP"
 .br
 .ti -1c
-.RI "typedef \fBu32\fP \fBRGFW_bool\fP"
+.RI "typedef \fBu8\fP \fBRGFW_bool\fP"
 .br
 .ti -1c
 .RI "typedef struct \fBRGFW_monitorMode\fP \fBRGFW_monitorMode\fP"
@@ -708,7 +708,7 @@ RGFW.h
 
 .SS "typedef int8_t \fBi8\fP"
 
-.SS "typedef \fBu32\fP \fBRGFW_bool\fP"
+.SS "typedef \fBu8\fP \fBRGFW_bool\fP"
 
 .SS "typedef struct \fBRGFW_event\fP \fBRGFW_event\fP"
 Event structure for checking/getting events 
@@ -719,7 +719,7 @@ structure for monitor data
 .SS "typedef void \fBRGFW_mouse\fP"
 loads mouse from bitmap (similar to RGFW_window_setIcon), icon NOT resized by default 
 .SS "typedef void* \fBRGFW_thread\fP"
-thread type for window 
+thread type for windows 
 .SS "typedef struct \fBRGFW_window\fP \fBRGFW_window\fP"
 Window structure for managing the window 
 .SS "typedef uint16_t \fBu16\fP"
@@ -755,7 +755,7 @@ scale the window to the screen
 .PP
 the window is hidden
 .PP
-< creat a floating window
+< create a floating window
 .SS "typedef RGFW_ENUM (\fBu8\fP, RGFW_eventType)"
 event codes
 .PP
