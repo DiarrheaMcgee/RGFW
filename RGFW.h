@@ -731,11 +731,11 @@ typedef struct RGFW_window_src {
 /*! Optional arguments for making a windows */
 typedef RGFW_ENUM(u32, RGFW_windowFlags) {
 	RGFW_windowNoInitAPI = RGFW_BIT(0), /* do NOT init an API (mostly for bindings. you should use `#define RGFW_NO_API` in C) */
-	RGFW_windowNoBorder = RGFW_BIT(1), /*!< the window doesn't have a border () */
+	RGFW_windowNoBorder = RGFW_BIT(1), /*!< the window doesn't have a border */
 	RGFW_windowNoResize = RGFW_BIT(2), /*!< the window cannot be resized by the user */
 	RGFW_windowAllowDND = RGFW_BIT(3), /*!< the window supports drag and drop */
 	RGFW_windowHideMouse = RGFW_BIT(4), /*! the window should hide the mouse (can be toggled later on using `RGFW_window_mouseShow`) */
-	RGFW_windowFullscreen = RGFW_BIT(5), /* the window is fullscreen by default */
+	RGFW_windowFullscreen = RGFW_BIT(5), /*!< the window is fullscreen by default */
 	RGFW_windowTransparent = RGFW_BIT(6), /*!< the window is transparent (only properly works on X11 and MacOS, although it's meant for for windows) */
 	RGFW_windowCenter = RGFW_BIT(7), /*! center the window on the screen */
 	RGFW_windowOpenglSoftware = RGFW_BIT(8), /*! use OpenGL software rendering */
@@ -1031,36 +1031,6 @@ RGFWDEF const char* RGFW_readClipboard(size_t* size); /*!< read clipboard data *
 /*! read clipboard data or send a NULL str to just get the length of the clipboard data */
 RGFWDEF RGFW_ssize_t RGFW_readClipboardPtr(char* str, size_t strCapacity);
 RGFWDEF void RGFW_writeClipboard(const char* text, u32 textLen); /*!< write text to the clipboard */
-/** @} */
-
-
-
-/** * @defgroup error handling
-* @{ */
-typedef RGFW_ENUM(u8, RGFW_debugType) {
-	RGFW_typeError = 0, RGFW_typeWarning, RGFW_typeInfo
-};
-
-typedef RGFW_ENUM(u8, RGFW_errorCode) {
-	RGFW_noError = 0, /*!< no error */
-	RGFW_errOpenglContext, RGFW_errEGLContext, /*!< error with the OpenGL context */
-	RGFW_errWayland,
-	RGFW_errDirectXContext,
-	RGFW_errIOKit,
-	RGFW_errClipboard,
-	RGFW_errFailedFuncLoad,
-	RGFW_errBuffer,
-	RGFW_infoMonitor, RGFW_infoWindow, RGFW_infoBuffer,
-	RGFW_warningWayland, RGFW_warningOpenGL
-};
-
-typedef struct RGFW_debugContext { RGFW_window* win; RGFW_monitor monitor; u32 srcError; } RGFW_debugContext;
-#define RGFW_DEBUG_CTX(win, err) (RGFW_debugContext){win, (RGFW_monitor){}, err}
-#define RGFW_DEBUG_CTX_MON(monitor) (RGFW_debugContext){RGFW_root, monitor, 0}
-
-typedef void (* RGFW_debugfunc)(RGFW_debugType type, RGFW_errorCode err, RGFW_debugContext ctx, const char* msg);
-RGFWDEF RGFW_debugfunc RGFW_setDebugCallback(RGFW_debugfunc func);
-RGFWDEF void RGFW_sendDebugInfo(RGFW_debugType type, RGFW_errorCode err, RGFW_debugContext ctx, const char* msg); 
 /** @} */
 
 /**
@@ -1458,34 +1428,6 @@ const char* RGFW_readClipboard(size_t* len) {
 	return (const char*)str;
 }
 
-RGFW_debugfunc RGFW_debugCallback = NULL;
-RGFW_debugfunc RGFW_setDebugCallback(RGFW_debugfunc func) { 
-	RGFW_debugfunc RGFW_debugCallbackPrev = RGFW_debugCallback;
-	RGFW_debugCallback = func;
-	return RGFW_debugCallbackPrev; 
-}
-
-void RGFW_sendDebugInfo(RGFW_debugType type, RGFW_errorCode err, RGFW_debugContext ctx, const char* msg) {
-	if (RGFW_debugCallback) RGFW_debugCallback(type, err, ctx, msg);
-	#ifdef RGFW_DEBUG
-	switch (type) {
-		case RGFW_typeInfo: printf("RGFW INFO (%i %i): %s", type, err, msg); break;
-		case RGFW_typeError: printf("RGFW DEBUG (%i %i): %s", type, err, msg); break;
-		case RGFW_typeWarning: printf("RGFW WARNING (%i %i): %s", type, err, msg); break;
-		default: break;
-	}
-
-	switch (err) {
-		#ifdef RGFW_BUFFER
-		case RGFW_errBuffer: case RGFW_infoBuffer: printf(" buffer size: %i %i\n", ctx.win->bufferSize.w, ctx.win->bufferSize.h);
-		#endif
-		case RGFW_infoMonitor: printf(": scale (%s):\n   rect: {%i, %i, %i, %i}\n   physical size:%f %f\n   scale: %f %f\n   pixelRatio: %f\n   refreshRate: %i\n   depth: %i\n", ctx.monitor.name, ctx.monitor.x, ctx.monitor.y, ctx.monitor.mode.area.w, ctx.monitor.mode.area.h, ctx.monitor.physW, ctx.monitor.physH, ctx.monitor.scaleX, ctx.monitor.scaleY, ctx.monitor.pixelRatio, ctx.monitor.mode.refreshRate, ctx.monitor.mode.red + ctx.monitor.mode.green + ctx.monitor.mode.blue); break;
-		case RGFW_infoWindow: printf(" with rect of {%i, %i, %i, %i} \n", ctx.win->r.x, ctx.win->r.y,ctx. win->r.w, ctx.win->r.h); break;
-		case RGFW_errDirectXContext: printf(" srcError %i\n", ctx.srcError); break;
-		default: printf("\n");
-	}
-	#endif
-}
 
 double RGFW_timerOffset = 0;
 void RGFW_setTime(double time) {
@@ -2716,10 +2658,10 @@ void RGFW_createOpenGLContext(RGFW_window* win) {
 	win->src.EGL_context = eglCreateContext(win->src.EGL_display, config, EGL_NO_CONTEXT, attribs);
 
 	if (win->src.EGL_context == NULL) {
-		RGFW_sendDebugInfo(RGFW_typeError, RGFW_errEGLContext, RGFW_DEBUG_CTX(win, 0), "failed to create an EGL opengl context");
-		return;
+		#ifdef RGFW_DEBUG
+		fprintf(stderr, "failed to create an EGL opengl context\n");
+		#endif
 	}
-
 	eglMakeCurrent(win->src.EGL_display, win->src.EGL_surface, win->src.EGL_surface, win->src.EGL_context);
 	eglSwapBuffers(win->src.EGL_display, win->src.EGL_surface);
 }
@@ -3032,6 +2974,9 @@ static void xdg_surface_configure_handler(void *data,
 {
 	RGFW_UNUSED(data);
     xdg_surface_ack_configure(xdg_surface, serial);
+	#ifdef RGFW_DEBUG
+	printf("Surface configured\n");
+	#endif
 	RGFW_wl_configured = 1;
 }
 
@@ -3044,6 +2989,9 @@ static void xdg_toplevel_configure_handler(void *data,
         struct wl_array *states)
 {
 	RGFW_UNUSED(data); RGFW_UNUSED(toplevel); RGFW_UNUSED(states);
+	#ifdef RGFW_DEBUG
+    fprintf(stderr, "XDG toplevel configure: %dx%d\n", width, height);
+	#endif
 }
 
 static void xdg_toplevel_close_handler(void *data,
@@ -3062,6 +3010,9 @@ static void shm_format_handler(void *data,
         struct wl_shm *shm, uint32_t format)
 {
 	RGFW_UNUSED(data); RGFW_UNUSED(shm);
+	#ifdef RGFW_DEBUG
+    fprintf(stderr, "Format %d\n", format);
+	#endif
 }
 
 static const struct wl_shm_listener shm_listener = {
@@ -3237,6 +3188,17 @@ static void wl_global_registry_handler(void *data,
 		win->src.seat = wl_registry_bind(registry, id, &wl_seat_interface, 1);
 		wl_seat_add_listener(win->src.seat, &seat_listener, NULL);
 	}
+
+	else {
+		#ifdef RGFW_DEBUG
+		printf("did not register %s\n", interface);
+		return;
+		#endif
+	}
+
+	#ifdef RGFW_DEBUG
+	printf("registered %s\n", interface);
+	#endif
 }
 
 static void wl_global_registry_remove(void *data, struct wl_registry *registry, uint32_t name) { RGFW_UNUSED(data); RGFW_UNUSED(registry); RGFW_UNUSED(name); }
@@ -3260,6 +3222,9 @@ static void decoration_handle_configure(void *data,
 		struct zxdg_toplevel_decoration_v1 *decoration,
 		enum zxdg_toplevel_decoration_v1_mode mode) {
 	RGFW_UNUSED(data); RGFW_UNUSED(decoration);
+	#ifdef RGFW_DEBUG
+	printf("Using %s\n", get_mode_name(mode));
+	#endif
 	RGFW_current_mode = mode;
 }
 
@@ -3436,7 +3401,9 @@ void RGFW_window_initBufferPtr(RGFW_window* win, u8* buffer, RGFW_area area) {
 	win->buffer = (u8*)buffer;
 	win->bufferSize = area;
 
-	RGFW_sendDebugInfo(RGFW_typeInfo, RGFW_infoBuffer, RGFW_DEBUG_CTX(win, 0), "createing a 4 channel buffer");
+	#ifdef RGFW_DEBUG
+	printf("RGFW INFO: createing a 4 channel %i by %i buffer\n", area.w, area.h);
+	#endif
 	#ifdef RGFW_X11
 		#ifdef RGFW_OSMESA
 				win->src.ctx = OSMesaCreateContext(OSMESA_BGRA, NULL);
@@ -3454,12 +3421,12 @@ void RGFW_window_initBufferPtr(RGFW_window* win, u8* buffer, RGFW_area area) {
 		size_t size = win->r.w * win->r.h * 4;
 		int fd = create_shm_file(size);
 		if (fd < 0) {
-			RGFW_sendDebugInfo(RGFW_typeError, RGFW_errBuffer, RGFW_DEBUG_CTX(win, fd),"Failed to create a buffer.");
+			fprintf(stderr, "Failed to create a buffer. size: %ld\n", size);
 			exit(1);
 		
 		win->src.buffer = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 		if (win->src.buffer == MAP_FAILED) {
-			RGFW_sendDebugInfo(RGFW_typeError, RGFW_errBuffer, RGFW_DEBUG_CTX(win, MAP_FAILED), "mmap failed!");
+			fprintf(stderr, "mmap failed!\n");
 			close(fd);
 			exit(1);
 		}
@@ -3627,7 +3594,9 @@ RGFW_window* RGFW_createWindowPtr(const char* name, RGFW_rect rect, RGFW_windowF
 		i32 best_fbc = -1;
 
 		if (fbcount == 0) {
-			RGFW_sendDebugInfo(RGFW_typeError, RGFW_errOpenglContext, RGFW_DEBUG_CTX(win, 0), "Failed to find any valid GLX visual configs");
+			#ifdef RGFW_DEBUG
+			fprintf(stderr, "Failed to find any valid GLX visual configs\n");
+			#endif
 			return NULL;
 		}
 
@@ -3650,7 +3619,9 @@ RGFW_window* RGFW_createWindowPtr(const char* name, RGFW_rect rect, RGFW_windowF
 		}
 
 		if (best_fbc == -1) {
-			RGFW_sendDebugInfo(RGFW_typeError, RGFW_errOpenglContext, RGFW_DEBUG_CTX(win, 0), "Failed to get a valid GLX visual");
+			#ifdef RGFW_DEBUG
+			fprintf(stderr, "Failed to get a valid GLX visual\n");
+			#endif
 			return NULL;
 		}
 
@@ -3796,7 +3767,9 @@ RGFW_window* RGFW_createWindowPtr(const char* name, RGFW_rect rect, RGFW_windowF
 		if ((flags & RGFW_windowNoInitAPI) == 0)
 			RGFW_createOpenGLContext(win);
 	#endif
-	RGFW_sendDebugInfo(RGFW_typeInfo, RGFW_infoWindow, RGFW_DEBUG_CTX(win, 0), "a new window was created");
+	#ifdef RGFW_DEBUG
+		printf("RGFW INFO: a window with a rect of {%i, %i, %i, %i} \n", win->r.x, win->r.y, win->r.w, win->r.h);
+	#endif
 	RGFW_window_setMouseDefault(win);
 	RGFW_window_setFlags(win, flags);
 
@@ -3804,13 +3777,15 @@ RGFW_window* RGFW_createWindowPtr(const char* name, RGFW_rect rect, RGFW_windowF
 #endif
 #ifdef RGFW_WAYLAND
 	wayland:
-	RGFW_sendDebugInfo(RGFW_typeWarning, RGFW_warningWayland, RGFW_DEBUG_CTX(win, 0), "RGFW Wayland support is experimental");
+	fprintf(stderr, "Warning: RGFW Wayland support is experimental\n");
 
 	win->src.wl_display = wl_display_connect(NULL);
 	if (win->src.wl_display == NULL) {
-		RGFW_sendDebugInfo(RGFW_typeError, RGFW_errWayland, RGFW_DEBUG_CTX(win, 0), "Failed to load Wayland display");
+		#ifdef RGFW_DEBUG
+			fprintf(stderr, "Failed to load Wayland display\n");
+		#endif
 		#ifdef RGFW_X11
-			RGFW_sendDebugInfo(RGFW_typeWarning, RGFW_warningWayland, RGFW_DEBUG_CTX(win, 0), "Falling back to X11");
+			fprintf(stderr, "Falling back to X11\n");
 			RGFW_useWayland(0);
 			return RGFW_createWindowPtr(name, rect, flags, win);
 		#endif
@@ -3842,7 +3817,10 @@ RGFW_window* RGFW_createWindowPtr(const char* name, RGFW_rect rect, RGFW_windowF
 	wl_display_dispatch(win->src.wl_display);
 
 	if (win->src.compositor == NULL) {
-		RGFW_sendDebugInfo(RGFW_typeError, RGFW_errWayland, RGFW_DEBUG_CTX(win, 0), "Can't find compositor.");
+		#ifdef RGFW_DEBUG
+			fprintf(stderr, "Can't find compositor.\n");
+		#endif
+
 		return NULL;
 	}
 
@@ -3901,7 +3879,10 @@ RGFW_window* RGFW_createWindowPtr(const char* name, RGFW_rect rect, RGFW_windowF
 	struct wl_callback* callback = wl_surface_frame(win->src.surface);
 	wl_callback_add_listener(callback, &wl_surface_frame_listener, win);
 	wl_surface_commit(win->src.surface);
-	RGFW_sendDebugInfo(RGFW_typeInfo, RGFW_infoWindow, RGFW_DEBUG_CTX(win, 0), "a new window was created");
+
+	#ifdef RGFW_DEBUG
+		printf("RGFW INFO: a window with a rect of {%i, %i, %i, %i} \n", win->r.x, win->r.y, win->r.w, win->r.h);
+	#endif
 
 	#ifndef RGFW_NO_MONITOR
 	if (flags & RGFW_windowScaleToMonitor)
@@ -5097,7 +5078,9 @@ void RGFW_writeClipboard(const char* text, u32 textLen) {
 	/* request ownership of the clipboard section and request to convert it, this means its our job to convert it */
 	XSetSelectionOwner(RGFW_root->src.display, RGFW_XCLIPBOARD, RGFW_root->src.window, CurrentTime);
 	if (XGetSelectionOwner(RGFW_root->src.display, RGFW_XCLIPBOARD) != RGFW_root->src.window) {
-    	RGFW_sendDebugInfo(RGFW_typeError, RGFW_errClipboard, RGFW_DEBUG_CTX(RGFW_root, 0), "X11 failed to become owner of clipboard selection");
+		#ifdef RGFW_DEBUG
+    	fprintf(stderr, "RGFW: X11 failed to become owner of clipboard selection\n");
+	   	#endif
 		return;
 	}
 
@@ -5269,7 +5252,10 @@ RGFW_monitor RGFW_XCreateMonitor(i32 screen) {
 		if (info == NULL || ci == NULL) {
 			XRRFreeScreenResources(sr);
 			XCloseDisplay(display);
-			RGFW_sendDebugInfo(RGFW_typeInfo, RGFW_infoMonitor, RGFW_DEBUG_CTX_MON(monitor), "monitor found");
+
+			#ifdef RGFW_DEBUG
+			printf("RGFW INFO: monitor found: scale (%s):\n   rect: {%i, %i, %i, %i}\n   physical size:%f %f\n   scale: %f %f\n   pixelRatio: %f\n   refreshRate: %i\n   depth: %i\n", monitor.name, monitor.x, monitor.y, monitor.mode.area.w, monitor.mode.area.h, monitor.physW, monitor.physH, monitor.scaleX, monitor.scaleY, monitor.pixelRatio, monitor.mode.refreshRate, monitor.mode.red + monitor.mode.green + monitor.mode.blue);
+			#endif
 			return monitor;
 		}
 
@@ -5303,7 +5289,10 @@ RGFW_monitor RGFW_XCreateMonitor(i32 screen) {
 
 	if (RGFW_root == NULL) XCloseDisplay(display);
 
-	RGFW_sendDebugInfo(RGFW_typeInfo, RGFW_infoMonitor, RGFW_DEBUG_CTX_MON(monitor), "monitor found");
+	#ifdef RGFW_DEBUG
+	printf("RGFW INFO: monitor found: scale (%s):\n   rect: {%i, %i, %i, %i}\n   physical size:%f %f\n   scale: %f %f\n   pixelRatio: %f\n   refreshRate: %i\n   depth: %i\n", monitor.name, monitor.x, monitor.y, monitor.mode.area.w, monitor.mode.area.h, monitor.physW, monitor.physH, monitor.scaleX, monitor.scaleY, monitor.pixelRatio, monitor.mode.refreshRate, monitor.mode.red + monitor.mode.green + monitor.mode.blue);
+	#endif
+
 	return monitor;
 }
 
@@ -5976,10 +5965,12 @@ void RGFW_loadXInput(void) {
 		RGFW_PROC_DEF(RGFW_XInput_dll, XInputGetKeystroke);
 	}
 
+	#ifdef RGFW_DEBUG
 	if (XInputGetStateSRC == NULL)
-		RGFW_sendDebugInfo(RGFW_typeError, RGFW_errFailedFuncLoad, RGFW_DEBUG_CTX(.win = RGFW_root, .srcError = 0), "Failed to load XInputGetState");
+		printf("RGFW ERR: Failed to load XInputGetState\n");
 	if (XInputGetKeystrokeSRC == NULL)
-		RGFW_sendDebugInfo(RGFW_typeError, RGFW_errFailedFuncLoad, RGFW_DEBUG_CTX(.win = RGFW_root, .srcError = 0), "Failed to load XInputGetKeystroke");
+		printf("RGFW ERR: Failed to load XInputGetKeystroke\n");
+	#endif
 }
 #endif
 
@@ -6052,7 +6043,10 @@ void RGFW_captureCursor(RGFW_window* win, RGFW_rect rect) {
 #endif
 
 int RGFW_window_createDXSwapChain(RGFW_window* win, IDXGIFactory* pFactory, IUnknown* pDevice, IDXGISwapChain** swapchain) {
-    RGFW_ASSERT(win && pFactory && pDevice && swapchain);
+    if (!win || !pFactory || !pDevice || !swapchain) {
+        printf("Error: Null argument passed to RGFW_window_createDXSwapChain\n");
+        return -1;
+    }
 
     static DXGI_SWAP_CHAIN_DESC swapChainDesc = { 0 };
     swapChainDesc.BufferCount = 2; 
@@ -6068,7 +6062,7 @@ int RGFW_window_createDXSwapChain(RGFW_window* win, IDXGIFactory* pFactory, IUnk
 
     HRESULT hr = pFactory->lpVtbl->CreateSwapChain(pFactory, (IUnknown*)pDevice, &swapChainDesc, swapchain);
     if (FAILED(hr)) {
-        RGFW_sendDebugInfo(RGFW_typeError, RGFW_errDirectXContext, RGFW_DEBUG_CTX(.win = win, .srcError = hr), "Failed to create DirectX swap chain!");
+        printf("Error: Failed to create DirectX swap chain! HRESULT: 0x%X\n", hr);
         return -2;
     }
 
@@ -6254,12 +6248,18 @@ RGFW_window* RGFW_createWindowPtr(const char* name, RGFW_rect rect, RGFW_windowF
 				int pixel_format;
 				UINT num_formats;
 				wglChoosePixelFormatARB(win->src.hdc, pixel_format_attribs, 0, 1, &pixel_format, &num_formats);
-				if (!num_formats)
-					RGFW_sendDebugInfo(RGFW_typeError, RGFW_errOpenglContext, RGFW_DEBUG_CTX(win, 0), "Failed to create a pixel format for WGL");
+				if (!num_formats) {
+					#ifdef RGFW_DEBUG
+					printf("Failed to create a pixel format for WGL.\n");
+					#endif
+				}
 
 				DescribePixelFormat(win->src.hdc, pixel_format, sizeof(pfd), &pfd);
-				if (!SetPixelFormat(win->src.hdc, pixel_format, &pfd))
-					RGFW_sendDebugInfo(RGFW_typeError, RGFW_errOpenglContext, RGFW_DEBUG_CTX(win, 0), "Failed to set the WGL pixel format");
+				if (!SetPixelFormat(win->src.hdc, pixel_format, &pfd)) {
+					#ifdef RGFW_DEBUG
+					printf("Failed to set the WGL pixel format.\n");
+					#endif
+				}
 			}
 
 			/* create opengl/WGL context for the specified version */
@@ -6282,8 +6282,10 @@ RGFW_window* RGFW_createWindowPtr(const char* name, RGFW_rect rect, RGFW_windowF
 
 			win->src.ctx = (HGLRC)wglCreateContextAttribsARB(win->src.hdc, NULL, attribs);
 		} else { /* fall back to a default context (probably opengl 2 or something) */
-			RGFW_sendDebugInfo(RGFW_typeError, RGFW_errOpenglContext, RGFW_DEBUG_CTX(win, 0), "Failed to create an accelerated OpenGL Context");
-	
+			#ifdef RGFW_DEBUG
+			fprintf(stderr, "Failed to create an accelerated OpenGL Context\n");
+			#endif
+
 			int pixel_format = ChoosePixelFormat(win->src.hdc, &pfd);
 			SetPixelFormat(win->src.hdc, pixel_format, &pfd);
 
@@ -6319,7 +6321,10 @@ RGFW_window* RGFW_createWindowPtr(const char* name, RGFW_rect rect, RGFW_windowF
 		wglShareLists(RGFW_root->src.ctx, win->src.ctx);
 	#endif
 
-	RGFW_sendDebugInfo(RGFW_typeInfo, RGFW_infoWindow, RGFW_DEBUG_CTX(win, 0), "a new window was created");
+	#ifdef RGFW_DEBUG
+	printf("RGFW INFO: a window with a rect of {%i, %i, %i, %i} \n", win->r.x, win->r.y, win->r.w, win->r.h);
+	#endif
+
 	return win;
 }
 
@@ -6974,7 +6979,10 @@ RGFW_monitor win32CreateMonitor(HMONITOR src) {
 		}
 	#endif
 
-	RGFW_sendDebugInfo(RGFW_typeInfo, RGFW_infoMonitor, RGFW_DEBUG_CTX_MON(monitor), "monitor found");
+	#ifdef RGFW_DEBUG
+	printf("RGFW INFO: monitor found: scale (%s):\n   rect: {%i, %i, %i, %i}\n   physical size:%f %f\n   scale: %f %f\n   pixelRatio: %f\n   refreshRate: %i\n   depth: %i\n", monitor.name, monitor.x, monitor.y, monitor.mode.area.w, monitor.mode.area.h, monitor.physW, monitor.physH, monitor.scaleX, monitor.scaleY, monitor.pixelRatio, monitor.mode.refreshRate, monitor.mode.red + monitor.mode.green + monitor.mode.blue);
+	#endif
+
 	return monitor;
 }
 #endif /* RGFW_NO_MONITOR */
@@ -7387,7 +7395,9 @@ void RGFW_window_swapInterval(RGFW_window* win, i32 swapInterval) {
 	static void* loadSwapFunc = (void*) 1;
 
 	if (loadSwapFunc == NULL) {
-		RGFW_sendDebugInfo(RGFW_typeWarning, RGFW_warningOpenGL, RGFW_DEBUG_CTX(win, 0), "wglSwapIntervalEXT not supported");
+		#ifdef RGFW_DEBUG
+		fprintf(stderr, "wglSwapIntervalEXT not supported\n");
+		#endif
 		return;
 	}
 
@@ -7396,8 +7406,11 @@ void RGFW_window_swapInterval(RGFW_window* win, i32 swapInterval) {
 		wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC) loadSwapFunc;
 	}
 
-	if (wglSwapIntervalEXT(swapInterval) == FALSE)
-		RGFW_sendDebugInfo(RGFW_typeError, RGFW_errOpenglContext, RGFW_DEBUG_CTX(win, 0), "Failed to set swap interval");
+	if (wglSwapIntervalEXT(swapInterval) == FALSE) {
+		#ifdef RGFW_DEBUG
+		fprintf(stderr, "Failed to set swap interval\n");
+		#endif
+	}
 	#else
 	RGFW_UNUSED(swapInterval);
 	#endif
@@ -7896,7 +7909,10 @@ bool performDragOperation(id self, SEL sel, id sender) {
 
 	// Check if the pasteboard contains file URLs
 	if (objc_msgSend_id_bool(types, sel_registerName("containsObject:"), fileURLsType) == 0) {
-		RGFW_sendDebugInfo(RGFW_typeError, RGFW_errClipboard, RGFW_DEBUG_CTX(win, 0), "No files found on the pasteboard.");
+		#ifdef RGFW_DEBUG
+		printf("No files found on the pasteboard.\n");
+		#endif
+
 		return 0;
 	}
 
@@ -8081,7 +8097,7 @@ RGFWDEF void RGFW_osxInitIOKit(void);
 void RGFW_osxInitIOKit(void) {
 	IOHIDManagerRef hidManager = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
 	if (!hidManager) {
-		RGFW_sendDebugInfo(RGFW_typeError, RGFW_errIOKit, RGFW_DEBUG_CTX(RGFW_root, 0), "Failed to create IOHIDManager.");
+		fprintf(stderr, "Failed to create IOHIDManager.\n");
 		return;
 	}
 
@@ -8092,7 +8108,7 @@ void RGFW_osxInitIOKit(void) {
 		&kCFTypeDictionaryValueCallBacks
 	);
 	if (!matchingDictionary) {
-		RGFW_sendDebugInfo(RGFW_typeError, RGFW_errIOKit, RGFW_DEBUG_CTX(RGFW_root, 0), "Failed to create matching dictionary for IOKit.");
+		fprintf(stderr, "Failed to create matching dictionary.\n");
 		CFRelease(hidManager);
 		return;
 	}
@@ -8334,14 +8350,19 @@ RGFW_window* RGFW_createWindowPtr(const char* name, RGFW_rect rect, RGFW_windowF
 		void* format = NSOpenGLPixelFormat_initWithAttributes((uint32_t*)attrs);
 
 		if (format == NULL) {
-			RGFW_sendDebugInfo(RGFW_typeError, RGFW_errOpenglContext, RGFW_DEBUG_CTX(win, 0), "Failed to load pixel format for OpenGL");
+			#ifdef RGFW_DEBUG
+			printf("Failed to load pixel format for OpenGL\n");
+			#endif
+
 			void* attrs = RGFW_initFormatAttribs(1);
 			format = NSOpenGLPixelFormat_initWithAttributes((uint32_t*)attrs);
 
+			#ifdef RGFW_DEBUG
 			if (format == NULL)
-				RGFW_sendDebugInfo(RGFW_typeError, RGFW_errOpenglContext, RGFW_DEBUG_CTX(win, 0), "and loading software rendering OpenGL failed");
+				printf("and loading software rendering OpenGL failed\n");
 			else
-				RGFW_sendDebugInfo(RGFW_typeWarning, RGFW_warningOpenGL, RGFW_DEBUG_CTX(win, 0), "Switching to software rendering");
+				printf("Switching to software rendering\n");
+			#endif
 		}
 
 		/* the pixel format can be passed directly to opengl context creation to create a context
@@ -8443,7 +8464,9 @@ RGFW_window* RGFW_createWindowPtr(const char* name, RGFW_rect rect, RGFW_windowF
 	NSRetain(win->src.window);
 	NSRetain(NSApp);
 
-	RGFW_sendDebugInfo(RGFW_typeInfo, RGFW_infoWindow, RGFW_DEBUG_CTX(win, 0), "a new  window was created");
+	#ifdef RGFW_DEBUG
+	printf("RGFW INFO: a window with a rect of {%i, %i, %i, %i} \n", win->r.x, win->r.y, win->r.w, win->r.h);
+	#endif
 	return win;
 }
 
@@ -9194,7 +9217,10 @@ RGFW_monitor RGFW_NSCreateMonitor(CGDirectDisplayID display, id screen) {
 	monitor.scaleX = ((i32)(((float) (ppi_width) / dpi) * 10.0f)) / 10.0f;
 	monitor.scaleY = ((i32)(((float) (ppi_height) / dpi) * 10.0f)) / 10.0f;
 
-	RGFW_sendDebugInfo(RGFW_typeInfo, RGFW_infoMonitor, RGFW_DEBUG_CTX_MON(monitor), "monitor found");
+	#ifdef RGFW_DEBUG
+	printf("RGFW INFO: monitor found: scale (%s):\n   rect: {%i, %i, %i, %i}\n   physical size:%f %f\n   scale: %f %f\n   pixelRatio: %f\n   refreshRate: %i\n   depth: %i\n", monitor.name, monitor.x, monitor.y, monitor.mode.area.w, monitor.mode.area.h, monitor.physW, monitor.physH, monitor.scaleX, monitor.scaleY, monitor.pixelRatio, monitor.mode.refreshRate, monitor.mode.red + monitor.mode.green + monitor.mode.blue);
+	#endif
+
 	return monitor;
 }
 
@@ -9978,7 +10004,10 @@ RGFW_window* RGFW_createWindowPtr(const char* name, RGFW_rect rect, RGFW_windowF
 
 	RGFW_window_setFlags(win, flags);
 
-	RGFW_sendDebugInfo(RGFW_typeInfo, RGFW_infoWindow, RGFW_DEBUG_CTX(win, 0), "a new  window was created");
+	#ifdef RGFW_DEBUG
+	printf("RGFW INFO: a window with a rect of {%i, %i, %i, %i} \n", win->r.x, win->r.y, win->r.w, win->r.h);
+	#endif
+
     return win;
 }
 
