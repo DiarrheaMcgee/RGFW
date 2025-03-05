@@ -863,7 +863,7 @@ RGFWDEF void RGFW_stopCheckEvents(void);
 /*! window managment functions */
 RGFWDEF void RGFW_window_close(RGFW_window* win); /*!< close the window and free leftover data */
 
-/*! move window to a given point */
+/*! move a window to a given point */
 RGFWDEF void RGFW_window_move(RGFW_window* win,
 	RGFW_point v /*!< new pos */
 );
