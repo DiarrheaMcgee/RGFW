@@ -1,4 +1,4 @@
-.TH "RGFW.h" 3 "Sun Mar 16 2025" "RGFW" \" -*- nroff -*-
+.TH "RGFW.h" 3 "Sat Mar 22 2025" "RGFW" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -55,7 +55,7 @@ RGFW.h
 .RI "#define \fBRGFW_UNUSED\fP(x)   (void)(x)"
 .br
 .ti -1c
-.RI "#define \fBRGFW_ROUND\fP(x)   (int)((x) >= 0 ? (x) + 0\&.5f : (x) \- 0\&.5f)"
+.RI "#define \fBRGFW_ROUND\fP(x)   (\fBi32\fP)((x) >= 0 ? (x) + 0\&.5f : (x) \- 0\&.5f)"
 .br
 .ti -1c
 .RI "#define \fB__USE_POSIX199309\fP"
@@ -648,6 +648,12 @@ RGFW.h
 .RI "\fBRGFWDEF\fP void \fBRGFW_window_swapBuffers_software\fP (\fBRGFW_window\fP *win)"
 .br
 .ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_initOpenGL\fP (\fBRGFW_window\fP *win, \fBRGFW_bool\fP software)"
+.br
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_freeOpenGL\fP (\fBRGFW_window\fP *win)"
+.br
+.ti -1c
 .RI "typedef \fBRGFW_ENUM\fP (\fBu8\fP, RGFW_glHints)"
 .br
 .ti -1c
@@ -750,7 +756,7 @@ RGFW.h
 
 .SS "#define RGFW_RECT(x, y, w, h)   (\fBRGFW_rect\fP){(\fBi32\fP)(x), (\fBi32\fP)(y), (\fBi32\fP)(w), (\fBi32\fP)(h)}"
 
-.SS "#define RGFW_ROUND(x)   (int)((x) >= 0 ? (x) + 0\&.5f : (x) \- 0\&.5f)"
+.SS "#define RGFW_ROUND(x)   (\fBi32\fP)((x) >= 0 ? (x) + 0\&.5f : (x) \- 0\&.5f)"
 
 .SS "#define RGFW_STRNCMP(s1, s2, max)   strncmp(s1, s2, max)"
 
