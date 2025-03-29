@@ -17,7 +17,6 @@ DWORD loop2(void* args);
 void* loop2(void* args);
 #endif
 
-
 unsigned char icon[4 * 3 * 3] = {0xFF, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0xFF, 0xFF, 0xFF, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF};
 unsigned char running = 1, running2 = 1;
 
@@ -48,10 +47,9 @@ int main(void) {
 
     RGFW_setWindowRefreshCallback(refreshCallback);
 
-    #ifdef RGFW_MACOS
     win2 = RGFW_createWindow("subwindow", RGFW_RECT(200, 200, 200, 200), 0);
-    #endif
     RGFW_createThread((RGFW_threadFunc_ptr)loop2, NULL); /* the function must be run after the window of this thread is made for some reason (using X11) */
+    RGFW_window_makeCurrent(win);
 
     unsigned char i;
 
@@ -116,9 +114,9 @@ int main(void) {
     }
 
     RGFW_freeMouse(mouse);
-
     running2 = 0;
     RGFW_window_close(win);
+    while (win2); // wait for second window to close
 }
 
 void drawLoop(RGFW_window *w) {
@@ -150,12 +148,7 @@ DWORD loop2(void* args) {
 void* loop2(void* args) {
 #endif
     RGFW_UNUSED(args);
-
-    #ifndef __APPLE__
-    RGFW_window* win = RGFW_createWindow("subwindow", RGFW_RECT(200, 200, 200, 200), 0);
-    #else
     RGFW_window* win = win2;
-    #endif
 
     while (running2) {
 //printf("hello\n");
@@ -191,11 +184,8 @@ void* loop2(void* args) {
 
     running = 0;
     RGFW_window_close(win);
-	
-	#ifdef __APPLE__
-	win2 = NULL;
-	#endif
 
+    win2 = NULL;
     #ifdef RGFW_WINDOWS
     return 0;
     #else

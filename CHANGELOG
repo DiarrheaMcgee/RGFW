@@ -1,7 +1,7 @@
 changelog
 ---------
 
-Current Version: RGFW 1.6.5-dev
+Current Version: RGFW 1.7-dev
 -----------------------------------------------
 - fix `RGFW_window_setFlags` overwrite bugs (@DiarrheaMcgee)
 - add missing string override functions, casting warnings, ensure `wayland:` (@DiarrheaMcgee)
@@ -45,6 +45,10 @@ Current Version: RGFW 1.6.5-dev
 - add RGFW_ADVANCED_SMOOTH_RESIZE for X11 and winapi (allows for smoother resizing)
 - make it so the window can only be transparent if RGFW_windowTransparent is enabled (GLX) (depth == 24 by default), allowing only opengl settings (like multi-sampiling)
 - add swapInterval to wgl opengl function loading function
+- add RGFW_init and RGFW_deinit
+- fix macOS software rendering support
+- fix RGFW memory alignment
+- fix window open before flags set     
 
 Release:    RGFW 1.6 (Feb 25, 2025)
 -----------------------------------------------
