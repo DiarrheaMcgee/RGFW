@@ -10165,44 +10165,42 @@ $(function() {
 <div class="line"><a id="l10354" name="l10354"></a><span class="lineno">10354</span><span class="preprocessor">#include &lt;pthread.h&gt;</span></div>
 <div class="line"><a id="l10355" name="l10355"></a><span class="lineno">10355</span> </div>
 <div class="line"><a id="l10356" name="l10356"></a><span class="lineno">10356</span><a class="code hl_typedef" href="RGFW_8h.html#a321d383e47d4f8261ddfb9d82ff444f8">RGFW_thread</a> <a class="code hl_function" href="group__Threads.html#gabb829fbe339184bf68a558526db8fa8e">RGFW_createThread</a>(<a class="code hl_typedef" href="group__Threads.html#ga13d60c1d8ee57056290acdc59bfc37a0">RGFW_threadFunc_ptr</a> ptr, <span class="keywordtype">void</span>* args) {</div>
-<div class="line"><a id="l10357" name="l10357"></a><span class="lineno">10357</span>    <a class="code hl_define" href="RGFW_8h.html#aac2c5e611731b038c9377999b4b2af64">RGFW_UNUSED</a>(args);</div>
-<div class="line"><a id="l10358" name="l10358"></a><span class="lineno">10358</span> </div>
-<div class="line"><a id="l10359" name="l10359"></a><span class="lineno">10359</span>    <a class="code hl_typedef" href="RGFW_8h.html#a321d383e47d4f8261ddfb9d82ff444f8">RGFW_thread</a> t;</div>
-<div class="line"><a id="l10360" name="l10360"></a><span class="lineno">10360</span>    pthread_create((pthread_t*) &amp;t, NULL, *ptr, NULL);</div>
-<div class="line"><a id="l10361" name="l10361"></a><span class="lineno">10361</span>    <span class="keywordflow">return</span> t;</div>
-<div class="line"><a id="l10362" name="l10362"></a><span class="lineno">10362</span>}</div>
-<div class="line"><a id="l10363" name="l10363"></a><span class="lineno">10363</span><span class="keywordtype">void</span> <a class="code hl_function" href="group__Threads.html#ga86aab7e48c958b8985d261dce599fbd2">RGFW_cancelThread</a>(<a class="code hl_typedef" href="RGFW_8h.html#a321d383e47d4f8261ddfb9d82ff444f8">RGFW_thread</a> thread) { pthread_cancel((pthread_t) thread); }</div>
-<div class="line"><a id="l10364" name="l10364"></a><span class="lineno">10364</span><span class="keywordtype">void</span> <a class="code hl_function" href="group__Threads.html#ga43401d0d164edea95f9c6cd2df093473">RGFW_joinThread</a>(<a class="code hl_typedef" href="RGFW_8h.html#a321d383e47d4f8261ddfb9d82ff444f8">RGFW_thread</a> thread) { pthread_join((pthread_t) thread, NULL); }</div>
-<div class="line"><a id="l10365" name="l10365"></a><span class="lineno">10365</span> </div>
-<div class="line"><a id="l10366" name="l10366"></a><span class="lineno">10366</span><span class="preprocessor">#if defined(__linux__)</span></div>
-<div class="line"><a id="l10367" name="l10367"></a><span class="lineno">10367</span><span class="keywordtype">void</span> <a class="code hl_function" href="group__Threads.html#ga4ff572bb2d0f4bcb2e146fb00b17ea2a">RGFW_setThreadPriority</a>(<a class="code hl_typedef" href="RGFW_8h.html#a321d383e47d4f8261ddfb9d82ff444f8">RGFW_thread</a> thread, <a class="code hl_typedef" href="RGFW_8h.html#a92c50087ca0e64fa93fc59402c55f8ca">u8</a> priority) { pthread_setschedprio((pthread_t)thread, priority); }</div>
-<div class="line"><a id="l10368" name="l10368"></a><span class="lineno">10368</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l10369" name="l10369"></a><span class="lineno">10369</span><span class="keywordtype">void</span> <a class="code hl_function" href="group__Threads.html#ga4ff572bb2d0f4bcb2e146fb00b17ea2a">RGFW_setThreadPriority</a>(<a class="code hl_typedef" href="RGFW_8h.html#a321d383e47d4f8261ddfb9d82ff444f8">RGFW_thread</a> thread, <a class="code hl_typedef" href="RGFW_8h.html#a92c50087ca0e64fa93fc59402c55f8ca">u8</a> priority) { <a class="code hl_define" href="RGFW_8h.html#aac2c5e611731b038c9377999b4b2af64">RGFW_UNUSED</a>(thread); <a class="code hl_define" href="RGFW_8h.html#aac2c5e611731b038c9377999b4b2af64">RGFW_UNUSED</a>(priority); }</div>
-<div class="line"><a id="l10370" name="l10370"></a><span class="lineno">10370</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l10371" name="l10371"></a><span class="lineno">10371</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l10372" name="l10372"></a><span class="lineno">10372</span> </div>
-<div class="line"><a id="l10373" name="l10373"></a><span class="lineno">10373</span><span class="preprocessor">#ifndef RGFW_WASM</span></div>
-<div class="line"><a id="l10374" name="l10374"></a><span class="lineno">10374</span><span class="keywordtype">void</span> <a class="code hl_function" href="group__Supporting.html#ga89d25fafe12c27addf2cab9c67be8e6e">RGFW_sleep</a>(<a class="code hl_typedef" href="RGFW_8h.html#a3f7e2bcbb0b4c338f3c4f6c937cd4234">u64</a> ms) {</div>
-<div class="line"><a id="l10375" name="l10375"></a><span class="lineno">10375</span>    <span class="keyword">struct </span>timespec time;</div>
-<div class="line"><a id="l10376" name="l10376"></a><span class="lineno">10376</span>    time.tv_sec = 0;</div>
-<div class="line"><a id="l10377" name="l10377"></a><span class="lineno">10377</span>    time.tv_nsec = (<span class="keywordtype">long</span> int)((<span class="keywordtype">double</span>)ms * 1e+6);</div>
-<div class="line"><a id="l10378" name="l10378"></a><span class="lineno">10378</span> </div>
-<div class="line"><a id="l10379" name="l10379"></a><span class="lineno">10379</span><span class="preprocessor">    #ifndef RGFW_NO_UNIX_CLOCK</span></div>
-<div class="line"><a id="l10380" name="l10380"></a><span class="lineno">10380</span>    nanosleep(&amp;time, NULL);</div>
-<div class="line"><a id="l10381" name="l10381"></a><span class="lineno">10381</span><span class="preprocessor">    #endif</span></div>
-<div class="line"><a id="l10382" name="l10382"></a><span class="lineno">10382</span>}</div>
-<div class="line"><a id="l10383" name="l10383"></a><span class="lineno">10383</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l10384" name="l10384"></a><span class="lineno">10384</span> </div>
-<div class="line"><a id="l10385" name="l10385"></a><span class="lineno">10385</span><span class="preprocessor">#endif </span><span class="comment">/* end of unix / mac stuff */</span><span class="preprocessor"></span></div>
-<div class="line"><a id="l10386" name="l10386"></a><span class="lineno">10386</span><span class="preprocessor">#endif </span><span class="comment">/* RGFW_IMPLEMENTATION */</span><span class="preprocessor"></span></div>
-<div class="line"><a id="l10387" name="l10387"></a><span class="lineno">10387</span> </div>
-<div class="line"><a id="l10388" name="l10388"></a><span class="lineno">10388</span><span class="preprocessor">#if defined(__cplusplus) &amp;&amp; !defined(__EMSCRIPTEN__)</span></div>
-<div class="line"><a id="l10389" name="l10389"></a><span class="lineno">10389</span>}</div>
-<div class="line"><a id="l10390" name="l10390"></a><span class="lineno">10390</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l10391" name="l10391"></a><span class="lineno">10391</span> </div>
-<div class="line"><a id="l10392" name="l10392"></a><span class="lineno">10392</span><span class="preprocessor">#if _MSC_VER</span></div>
-<div class="line"><a id="l10393" name="l10393"></a><span class="lineno">10393</span><span class="preprocessor">    #pragma warning( pop )</span></div>
-<div class="line"><a id="l10394" name="l10394"></a><span class="lineno">10394</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l10357" name="l10357"></a><span class="lineno">10357</span>    <a class="code hl_typedef" href="RGFW_8h.html#a321d383e47d4f8261ddfb9d82ff444f8">RGFW_thread</a> t;</div>
+<div class="line"><a id="l10358" name="l10358"></a><span class="lineno">10358</span>    pthread_create((pthread_t*) &amp;t, NULL, *ptr, args);</div>
+<div class="line"><a id="l10359" name="l10359"></a><span class="lineno">10359</span>    <span class="keywordflow">return</span> t;</div>
+<div class="line"><a id="l10360" name="l10360"></a><span class="lineno">10360</span>}</div>
+<div class="line"><a id="l10361" name="l10361"></a><span class="lineno">10361</span><span class="keywordtype">void</span> <a class="code hl_function" href="group__Threads.html#ga86aab7e48c958b8985d261dce599fbd2">RGFW_cancelThread</a>(<a class="code hl_typedef" href="RGFW_8h.html#a321d383e47d4f8261ddfb9d82ff444f8">RGFW_thread</a> thread) { pthread_cancel((pthread_t) thread); }</div>
+<div class="line"><a id="l10362" name="l10362"></a><span class="lineno">10362</span><span class="keywordtype">void</span> <a class="code hl_function" href="group__Threads.html#ga43401d0d164edea95f9c6cd2df093473">RGFW_joinThread</a>(<a class="code hl_typedef" href="RGFW_8h.html#a321d383e47d4f8261ddfb9d82ff444f8">RGFW_thread</a> thread) { pthread_join((pthread_t) thread, NULL); }</div>
+<div class="line"><a id="l10363" name="l10363"></a><span class="lineno">10363</span> </div>
+<div class="line"><a id="l10364" name="l10364"></a><span class="lineno">10364</span><span class="preprocessor">#if defined(__linux__)</span></div>
+<div class="line"><a id="l10365" name="l10365"></a><span class="lineno">10365</span><span class="keywordtype">void</span> <a class="code hl_function" href="group__Threads.html#ga4ff572bb2d0f4bcb2e146fb00b17ea2a">RGFW_setThreadPriority</a>(<a class="code hl_typedef" href="RGFW_8h.html#a321d383e47d4f8261ddfb9d82ff444f8">RGFW_thread</a> thread, <a class="code hl_typedef" href="RGFW_8h.html#a92c50087ca0e64fa93fc59402c55f8ca">u8</a> priority) { pthread_setschedprio((pthread_t)thread, priority); }</div>
+<div class="line"><a id="l10366" name="l10366"></a><span class="lineno">10366</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l10367" name="l10367"></a><span class="lineno">10367</span><span class="keywordtype">void</span> <a class="code hl_function" href="group__Threads.html#ga4ff572bb2d0f4bcb2e146fb00b17ea2a">RGFW_setThreadPriority</a>(<a class="code hl_typedef" href="RGFW_8h.html#a321d383e47d4f8261ddfb9d82ff444f8">RGFW_thread</a> thread, <a class="code hl_typedef" href="RGFW_8h.html#a92c50087ca0e64fa93fc59402c55f8ca">u8</a> priority) { <a class="code hl_define" href="RGFW_8h.html#aac2c5e611731b038c9377999b4b2af64">RGFW_UNUSED</a>(thread); <a class="code hl_define" href="RGFW_8h.html#aac2c5e611731b038c9377999b4b2af64">RGFW_UNUSED</a>(priority); }</div>
+<div class="line"><a id="l10368" name="l10368"></a><span class="lineno">10368</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l10369" name="l10369"></a><span class="lineno">10369</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l10370" name="l10370"></a><span class="lineno">10370</span> </div>
+<div class="line"><a id="l10371" name="l10371"></a><span class="lineno">10371</span><span class="preprocessor">#ifndef RGFW_WASM</span></div>
+<div class="line"><a id="l10372" name="l10372"></a><span class="lineno">10372</span><span class="keywordtype">void</span> <a class="code hl_function" href="group__Supporting.html#ga89d25fafe12c27addf2cab9c67be8e6e">RGFW_sleep</a>(<a class="code hl_typedef" href="RGFW_8h.html#a3f7e2bcbb0b4c338f3c4f6c937cd4234">u64</a> ms) {</div>
+<div class="line"><a id="l10373" name="l10373"></a><span class="lineno">10373</span>    <span class="keyword">struct </span>timespec time;</div>
+<div class="line"><a id="l10374" name="l10374"></a><span class="lineno">10374</span>    time.tv_sec = 0;</div>
+<div class="line"><a id="l10375" name="l10375"></a><span class="lineno">10375</span>    time.tv_nsec = (<span class="keywordtype">long</span> int)((<span class="keywordtype">double</span>)ms * 1e+6);</div>
+<div class="line"><a id="l10376" name="l10376"></a><span class="lineno">10376</span> </div>
+<div class="line"><a id="l10377" name="l10377"></a><span class="lineno">10377</span><span class="preprocessor">    #ifndef RGFW_NO_UNIX_CLOCK</span></div>
+<div class="line"><a id="l10378" name="l10378"></a><span class="lineno">10378</span>    nanosleep(&amp;time, NULL);</div>
+<div class="line"><a id="l10379" name="l10379"></a><span class="lineno">10379</span><span class="preprocessor">    #endif</span></div>
+<div class="line"><a id="l10380" name="l10380"></a><span class="lineno">10380</span>}</div>
+<div class="line"><a id="l10381" name="l10381"></a><span class="lineno">10381</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l10382" name="l10382"></a><span class="lineno">10382</span> </div>
+<div class="line"><a id="l10383" name="l10383"></a><span class="lineno">10383</span><span class="preprocessor">#endif </span><span class="comment">/* end of unix / mac stuff */</span><span class="preprocessor"></span></div>
+<div class="line"><a id="l10384" name="l10384"></a><span class="lineno">10384</span><span class="preprocessor">#endif </span><span class="comment">/* RGFW_IMPLEMENTATION */</span><span class="preprocessor"></span></div>
+<div class="line"><a id="l10385" name="l10385"></a><span class="lineno">10385</span> </div>
+<div class="line"><a id="l10386" name="l10386"></a><span class="lineno">10386</span><span class="preprocessor">#if defined(__cplusplus) &amp;&amp; !defined(__EMSCRIPTEN__)</span></div>
+<div class="line"><a id="l10387" name="l10387"></a><span class="lineno">10387</span>}</div>
+<div class="line"><a id="l10388" name="l10388"></a><span class="lineno">10388</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l10389" name="l10389"></a><span class="lineno">10389</span> </div>
+<div class="line"><a id="l10390" name="l10390"></a><span class="lineno">10390</span><span class="preprocessor">#if _MSC_VER</span></div>
+<div class="line"><a id="l10391" name="l10391"></a><span class="lineno">10391</span><span class="preprocessor">    #pragma warning( pop )</span></div>
+<div class="line"><a id="l10392" name="l10392"></a><span class="lineno">10392</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aRGFW_8h_html_a040a460126bbe1cce5765c33cf90b700"><div class="ttname"><a href="RGFW_8h.html#a040a460126bbe1cce5765c33cf90b700">RGFW_STRNCMP</a></div><div class="ttdeci">#define RGFW_STRNCMP(s1, s2, max)</div><div class="ttdef"><b>Definition:</b> RGFW.h:213</div></div>
 <div class="ttc" id="aRGFW_8h_html_a11c9631a28d5243b1d48ee03ae215d79"><div class="ttname"><a href="RGFW_8h.html#a11c9631a28d5243b1d48ee03ae215d79">RGFW_ROUND</a></div><div class="ttdeci">#define RGFW_ROUND(x)</div><div class="ttdef"><b>Definition:</b> RGFW.h:185</div></div>
 <div class="ttc" id="aRGFW_8h_html_a11cac9d387da64acbcaa9cb3a21e4b14"><div class="ttname"><a href="RGFW_8h.html#a11cac9d387da64acbcaa9cb3a21e4b14">RGFW_loadMouse</a></div><div class="ttdeci">RGFWDEF RGFW_mouse * RGFW_loadMouse(u8 *icon, RGFW_area a, i32 channels)</div></div>
