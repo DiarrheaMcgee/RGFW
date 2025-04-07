@@ -739,7 +739,7 @@ typedef struct RGFW_window_src {
 #endif
 
 	void* view; /* apple viewpoint thingy */
-
+	void* mouse;
 #if defined(RGFW_OSMESA) || defined(RGFW_BUFFER)
 #endif
 } RGFW_window_src;
@@ -7199,30 +7199,36 @@ RGFW_bool RGFW_monitor_requestMode(RGFW_monitor mon, RGFW_monitorMode mode, RGFW
 }
 
 #endif
-HICON RGFW_loadHandleImage(u8* src, RGFW_area a, BOOL icon);
-HICON RGFW_loadHandleImage(u8* src, RGFW_area a, BOOL icon) {
+HICON RGFW_loadHandleImage(u8* src, i32 c, RGFW_area a, BOOL icon);
+HICON RGFW_loadHandleImage(u8* src, i32 c, RGFW_area a, BOOL icon) {
+    size_t channels = (size_t)c;
+
 	BITMAPV5HEADER bi;
 	ZeroMemory(&bi, sizeof(bi));
 	bi.bV5Size = sizeof(bi);
 	bi.bV5Width = (i32)a.w;
 	bi.bV5Height = -((LONG) a.h);
 	bi.bV5Planes = 1;
-	bi.bV5BitCount = 32;
-	bi.bV5Compression = BI_BITFIELDS;
-	bi.bV5RedMask = 0x000000ff;
-	bi.bV5GreenMask = 0x0000ff00;
-	bi.bV5BlueMask = 0x00ff0000; 
-	bi.bV5AlphaMask = 0xff000000;
-
+	bi.bV5BitCount = (WORD)(channels * 8);
+	bi.bV5Compression = BI_RGB;
 	HDC dc = GetDC(NULL);
 	u8* target = NULL;
 
 	HBITMAP color = CreateDIBSection(dc,
 		(BITMAPINFO*) &bi, DIB_RGB_COLORS, (void**) &target,
 		NULL, (DWORD) 0);
-	
-	memcpy(target, src, a.w * a.h * 4);
-	ReleaseDC(NULL, dc);
+    
+    for (size_t y = 0; y < a.h; y++) {
+        for (size_t x = 0; x < a.w; x++) {
+			size_t index = (y * 4 * (size_t)a.w) + x * channels;
+            target[index] = src[index + 2];
+            target[index + 1] = src[index + 1];
+            target[index + 2] = src[index];
+            target[index + 3] = src[index + 3];
+        }
+    }
+
+    ReleaseDC(NULL, dc);
 
 	HBITMAP mask = CreateBitmap((i32)a.w, (i32)a.h, 1, 1, NULL);
 
@@ -7243,9 +7249,7 @@ HICON RGFW_loadHandleImage(u8* src, RGFW_area a, BOOL icon) {
 }
 
 void* RGFW_loadMouse(u8* icon, RGFW_area a, i32 channels) {
-	RGFW_UNUSED(channels);
-
-	HCURSOR cursor = (HCURSOR) RGFW_loadHandleImage(icon, a, FALSE);
+	HCURSOR cursor = (HCURSOR) RGFW_loadHandleImage(icon, channels, a, FALSE);
 	return cursor;
 }
 
@@ -7409,11 +7413,11 @@ RGFW_bool RGFW_window_setIconEx(RGFW_window* win, u8* src, RGFW_area a, i32 chan
 		}
 
 		if (type & RGFW_iconWindow) {
-			win->src.hIconSmall = RGFW_loadHandleImage(src, a, TRUE);
+			win->src.hIconSmall = RGFW_loadHandleImage(src, channels, a, TRUE);
 			SendMessage(win->src.window, WM_SETICON, (WPARAM)ICON_SMALL, (LPARAM)win->src.hIconSmall);
 		}
 		if (type & RGFW_iconTaskbar) {
-			win->src.hIconBig = RGFW_loadHandleImage(src, a, TRUE);
+			win->src.hIconBig = RGFW_loadHandleImage(src, channels, a, TRUE);
 			SendMessage(win->src.window, WM_SETICON, (WPARAM)ICON_BIG, (LPARAM)win->src.hIconBig);
 		}
 		return RGFW_TRUE;
@@ -8252,6 +8256,7 @@ void RGFW__osxWindowBecameKey(id self, SEL sel) {
 
 	win->_flags |= RGFW_windowFocus;
 	RGFW_eventQueuePush((RGFW_event){.type = RGFW_focusIn, ._win = win});
+
 	RGFW_focusCallback(win, RGFW_TRUE);
 }
 
@@ -8701,6 +8706,8 @@ void RGFW_window_eventWait(RGFW_window* win, i32 waitMS) {
 
 RGFW_event* RGFW_window_checkEvent(RGFW_window* win) {
     if (win == NULL || ((win->_flags & RGFW_windowFreeOnClose) && (win->_flags & RGFW_EVENT_QUIT))) return NULL;
+
+    objc_msgSend_void((id)win->src.mouse, sel_registerName("set"));
     RGFW_event* ev =  RGFW_window_checkEventCore(win);
 	if (ev) {
 		((void(*)(id, SEL))objc_msgSend)(NSApp, sel_registerName("updateWindows"));
@@ -9118,7 +9125,9 @@ RGFW_mouse* RGFW_loadMouse(u8* icon, RGFW_area a, i32 channels) {
 
 void RGFW_window_setMouse(RGFW_window* win, RGFW_mouse* mouse) {
 	RGFW_ASSERT(win != NULL); RGFW_ASSERT(mouse);
+	CGDisplayShowCursor(kCGDirectMainDisplay);
 	objc_msgSend_void((id)mouse, sel_registerName("set"));
+	win->src.mouse = mouse;
 }
 
 void RGFW_freeMouse(RGFW_mouse* mouse) {
@@ -9150,6 +9159,7 @@ RGFW_bool RGFW_window_setMouseStandard(RGFW_window* win, u8 stdMouses) {
 	RGFW_UNUSED(win);
 	CGDisplayShowCursor(kCGDirectMainDisplay);
 	objc_msgSend_void(mouse, sel_registerName("set"));
+	win->src.mouse = mouse;
 
 	return RGFW_TRUE;
 }
