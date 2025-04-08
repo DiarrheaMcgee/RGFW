@@ -37,7 +37,7 @@ int main(void) {
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glPerspective(60, 16.0 / 9.0, 1, 75);
+    glPerspective(60, 16.0 / 9.0, 1.0, 1000);
     glMatrixMode(GL_MODELVIEW);
 
     RGFW_window_mouseHold(win, RGFW_AREA(win->r.w / 2, win->r.h / 2));    
@@ -51,7 +51,11 @@ int main(void) {
                 break;
 
             switch (win->event.type) {
-                case RGFW_mousePosChanged: {      
+                case RGFW_focusIn:
+                    RGFW_window_mouseUnhold(win);
+                    RGFW_window_mouseHold(win, RGFW_AREA(win->r.w / 2, win->r.h / 2));    
+                    break;
+               case RGFW_mousePosChanged: {      
                     int dev_x = win->event.vector.x;
                     int dev_y = win->event.vector.y;
                     
@@ -141,7 +145,7 @@ int main(void) {
         glEnd();
 
         RGFW_window_swapBuffers(win);
-		RGFW_checkFPS(frameStartTime, frames, 60);
+	RGFW_checkFPS(frameStartTime, frames, 60);
         frames++;
     }
 
@@ -152,10 +156,10 @@ int main(void) {
 }
 
 void update_camera(void) {
-    if (pitch >= 70)
-        pitch = 70;
-    else if (pitch <= -60)
-        pitch = -60;
+    if (pitch >= 90)
+        pitch = 90;
+    else if (pitch <= -90)
+        pitch = -90;
 
     glRotatef(pitch, 1.0, 0.0, 0.0);
     glRotatef(yaw, 0.0, 1.0, 0.0);
