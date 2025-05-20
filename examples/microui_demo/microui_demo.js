@@ -977,9 +977,10 @@ var ASM_CONSTS = {
  93917: ($0) => { navigator.clipboard.writeText(UTF8ToString($0)); },  
  93970: () => { return window.innerWidth; },  
  94000: () => { return window.innerHeight; },  
- 94031: () => { Module.requestFullscreen(false, true); },  
- 94070: () => { Module.exitFullscreen(false, true); },  
- 94106: ($0, $1) => { var element = document.getElementById("canvas"); if (element) element.style.opacity = $1; }
+ 94031: ($0, $1) => { var ext = UTF8ToString($0, $1); var canvas = document.querySelector('canvas'); var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl'); if (!gl) return 0; var supported = gl.getSupportedExtensions(); return supported && supported.includes(ext) ? 1 : 0; },  
+ 94311: () => { Module.requestFullscreen(false, true); },  
+ 94350: () => { Module.exitFullscreen(false, true); },  
+ 94386: ($0, $1) => { var element = document.getElementById("canvas"); if (element) element.style.opacity = $1; }
 };
 
 
@@ -4604,6 +4605,44 @@ var ASM_CONSTS = {
         canvasResizedCallbackTargetThread: 2
       };
       return doRequestFullscreen(target, strategy);
+    };
+
+  
+  var requestPointerLock = (target) => {
+      if (target.requestPointerLock) {
+        target.requestPointerLock();
+      } else {
+        // document.body is known to accept pointer lock, so use that to differentiate if the user passed a bad element,
+        // or if the whole browser just doesn't support the feature.
+        if (document.body.requestPointerLock
+          ) {
+          return -3;
+        }
+        return -1;
+      }
+      return 0;
+    };
+  
+  var _emscripten_request_pointerlock = (target, deferUntilInEventHandler) => {
+      target = findEventTarget(target);
+      if (!target) return -4;
+      if (!target.requestPointerLock
+        ) {
+        return -1;
+      }
+  
+      var canPerformRequests = JSEvents.canPerformEventHandlerRequests();
+  
+      // Queue this function call if we're not currently in an event handler and the user saw it appropriate to do so.
+      if (!canPerformRequests) {
+        if (deferUntilInEventHandler) {
+          JSEvents.deferCall(requestPointerLock, 2 /* priority below fullscreen */, [target]);
+          return 1;
+        }
+        return -2;
+      }
+  
+      return requestPointerLock(target);
     };
 
   var getHeapMax = () =>
@@ -12033,6 +12072,8 @@ var wasmImports = {
   /** @export */
   emscripten_request_fullscreen: _emscripten_request_fullscreen,
   /** @export */
+  emscripten_request_pointerlock: _emscripten_request_pointerlock,
+  /** @export */
   emscripten_resize_heap: _emscripten_resize_heap,
   /** @export */
   emscripten_sample_gamepad_data: _emscripten_sample_gamepad_data,
@@ -12251,7 +12292,6 @@ var missingLibrarySymbols = [
   'fillPointerlockChangeEventData',
   'registerPointerlockChangeEventCallback',
   'registerPointerlockErrorEventCallback',
-  'requestPointerLock',
   'fillVisibilityChangeEventData',
   'registerVisibilityChangeEventCallback',
   'registerBeforeUnloadEventCallback',
@@ -12408,6 +12448,7 @@ var unexportedSymbols = [
   'currentFullscreenStrategy',
   'restoreOldWindowedStyle',
   'doRequestFullscreen',
+  'requestPointerLock',
   'registerTouchEventCallback',
   'fillGamepadEventData',
   'registerGamepadEventCallback',
