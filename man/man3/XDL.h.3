@@ -1,4 +1,4 @@
-.TH "XDL.h" 3 "Tue May 20 2025" "RGFW" \" -*- nroff -*-
+.TH "XDL.h" 3 "Thu May 29 2025" "RGFW" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -332,6 +332,9 @@ XDL.h
 .RI "#define \fBXDefaultRootWindow\fP   \fBXDefaultRootWindowSrc\fP"
 .br
 .ti -1c
+.RI "#define \fBXDefaultScreen\fP   \fBXDefaultScreenSrc\fP"
+.br
+.ti -1c
 .RI "#define \fBXMatchVisualInfo\fP   \fBXMatchVisualInfoSrc\fP"
 .br
 .ti -1c
@@ -435,6 +438,9 @@ XDL.h
 .br
 .ti -1c
 .RI "#define \fBglXSwapIntervalEXT\fP   \fBglXSwapIntervalEXTSrc\fP"
+.br
+.ti -1c
+.RI "#define \fBglXQueryExtensionsString\fP   \fBglXQueryExtensionsStringSrc\fP"
 .br
 .in -1c
 .SS "Typedefs"
@@ -750,6 +756,9 @@ XDL.h
 .RI "typedef Window(* \fBPFN_XDefaultRootWindow\fP) (Display *)"
 .br
 .ti -1c
+.RI "typedef int(* \fBPFN_XDefaultScreen\fP) (Display *)"
+.br
+.ti -1c
 .RI "typedef int(* \fBPFN_XQueryKeymap\fP) (Display *, char[32])"
 .br
 .ti -1c
@@ -862,6 +871,9 @@ XDL.h
 .br
 .ti -1c
 .RI "typedef void(* \fBPFN_glXDestroyContext\fP) (Display *dpy, GLXContext ctx)"
+.br
+.ti -1c
+.RI "typedef const char *(* \fBPFN_glXQueryExtensionsString\fP) (Display *dpy, int screen)"
 .br
 .in -1c
 .SS "Functions"
@@ -1172,6 +1184,9 @@ XDL.h
 .RI "\fBPFN_XDefaultRootWindow\fP \fBXDefaultRootWindowSrc\fP"
 .br
 .ti -1c
+.RI "\fBPFN_XDefaultScreen\fP \fBXDefaultScreenSrc\fP"
+.br
+.ti -1c
 .RI "\fBPFN_XQueryKeymap\fP \fBXQueryKeymapSrc\fP"
 .br
 .ti -1c
@@ -1285,6 +1300,9 @@ XDL.h
 .ti -1c
 .RI "\fBPFN_glXDestroyContext\fP \fBglXDestroyContextSrc\fP"
 .br
+.ti -1c
+.RI "\fBPFN_glXQueryExtensionsString\fP \fBglXQueryExtensionsStringSrc\fP"
+.br
 .in -1c
 .SH "Macro Definition Documentation"
 .PP 
@@ -1307,6 +1325,8 @@ XDL.h
 .SS "#define glXGetVisualFromFBConfig   \fBglXGetVisualFromFBConfigSrc\fP"
 
 .SS "#define glXMakeCurrent   \fBglXMakeCurrentSrc\fP"
+
+.SS "#define glXQueryExtensionsString   \fBglXQueryExtensionsStringSrc\fP"
 
 .SS "#define glXSwapBuffers   \fBglXSwapBuffersSrc\fP"
 
@@ -1353,6 +1373,8 @@ XDL.h
 .SS "#define XCreateWindow   \fBXCreateWindowSrc\fP"
 
 .SS "#define XDefaultRootWindow   \fBXDefaultRootWindowSrc\fP"
+
+.SS "#define XDefaultScreen   \fBXDefaultScreenSrc\fP"
 
 .SS "#define XDefineCursor   \fBXDefineCursorSrc\fP"
 
@@ -1586,6 +1608,8 @@ XDL.h
 
 .SS "typedef Bool(* PFN_glXMakeCurrent) (Display *, GLXDrawable, GLXContext)"
 
+.SS "typedef const char *(* PFN_glXQueryExtensionsString) (Display *dpy, int screen)"
+
 .SS "typedef void(* PFN_glXSwapBuffers) (Display *, GLXDrawable)"
 
 .SS "typedef PFNGLXSWAPINTERVALEXTPROC \fBPFN_glXSwapIntervalEXT\fP"
@@ -1629,6 +1653,8 @@ XDL.h
 .SS "typedef Window(* PFN_XCreateWindow) (Display *, Window, int, int, unsigned int, unsigned int, unsigned int, int, unsigned int, Visual *, unsigned long, XSetWindowAttributes *)"
 
 .SS "typedef Window(* PFN_XDefaultRootWindow) (Display *)"
+
+.SS "typedef int(* PFN_XDefaultScreen) (Display *)"
 
 .SS "typedef int(* PFN_XDefineCursor) (Display *, Window, Cursor)"
 
@@ -1876,6 +1902,8 @@ XDL.h
 
 .SS "\fBPFN_glXMakeCurrent\fP glXMakeCurrentSrc"
 
+.SS "\fBPFN_glXQueryExtensionsString\fP glXQueryExtensionsStringSrc"
+
 .SS "\fBPFN_glXSwapBuffers\fP glXSwapBuffersSrc"
 
 .SS "\fBPFN_glXSwapIntervalEXT\fP glXSwapIntervalEXTSrc"
@@ -1919,6 +1947,8 @@ XDL.h
 .SS "\fBPFN_XCreateWindow\fP XCreateWindowSrc"
 
 .SS "\fBPFN_XDefaultRootWindow\fP XDefaultRootWindowSrc"
+
+.SS "\fBPFN_XDefaultScreen\fP XDefaultScreenSrc"
 
 .SS "\fBPFN_XDefineCursor\fP XDefineCursorSrc"
 

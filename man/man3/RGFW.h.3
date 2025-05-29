@@ -1,4 +1,4 @@
-.TH "RGFW.h" 3 "Tue May 20 2025" "RGFW" \" -*- nroff -*-
+.TH "RGFW.h" 3 "Thu May 29 2025" "RGFW" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -65,6 +65,9 @@ RGFW.h
 .br
 .ti -1c
 .RI "#define \fBRGFW_ASSERT\fP   assert"
+.br
+.ti -1c
+.RI "#define \fBRGFW_MEMSET\fP(ptr,  value,  num)   memset(ptr, value, num)"
 .br
 .ti -1c
 .RI "#define \fBRGFW_MEMCPY\fP(dist,  src,  len)   memcpy(dist, src, len)"
@@ -456,6 +459,9 @@ RGFW.h
 .RI "\fBRGFWDEF\fP void \fBRGFW_window_mouseHold\fP (\fBRGFW_window\fP *win, \fBRGFW_area\fP area)"
 .br
 .ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_mouseHeld\fP (\fBRGFW_window\fP *win)"
+.br
+.ti -1c
 .RI "\fBRGFWDEF\fP void \fBRGFW_window_mouseUnhold\fP (\fBRGFW_window\fP *win)"
 .br
 .ti -1c
@@ -776,6 +782,8 @@ RGFW.h
 .SS "#define RGFW_MAX_PATH   260 /* max length of a path (for dnd) */"
 
 .SS "#define RGFW_MEMCPY(dist, src, len)   memcpy(dist, src, len)"
+
+.SS "#define RGFW_MEMSET(ptr, value, num)   memset(ptr, value, num)"
 
 .SS "#define RGFW_OPENGL"
 
