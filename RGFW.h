@@ -713,6 +713,7 @@ typedef struct RGFW_window_src {
         i64 counter_value;
         XID counter;
     #endif
+    RGFW_rect r;
 #endif /* RGFW_X11 */
 #if defined(RGFW_WAYLAND)
 	struct wl_display* wl_display;
@@ -1732,7 +1733,7 @@ void RGFW_init_keys(void) {
 	RGFW_MAP [RGFW_OS_BASED_VALUE(133, 0x15B, 55, DOM_VK_WIN)] = RGFW_superL,
 	#if !defined(RGFW_MACOS) && !defined(RGFW_WASM)
 	RGFW_MAP [RGFW_OS_BASED_VALUE(105, 0x11D, 59, 0)] = RGFW_controlR               RGFW_NEXT
-	RGFW_MAP [RGFW_OS_BASED_VALUE(135, 0x15C, 55, 0)] = RGFW_superR,
+	RGFW_MAP [RGFW_OS_BASED_VALUE(134, 0x15C, 55, 0)] = RGFW_superR,
 	RGFW_MAP [RGFW_OS_BASED_VALUE(62, 0x036, 56, 0)] = RGFW_shiftR              RGFW_NEXT
 	RGFW_MAP [RGFW_OS_BASED_VALUE(108, 0x138, 58, 0)] = RGFW_altR,
 	#endif
@@ -4170,9 +4171,11 @@ RGFW_window* RGFW_createWindowPtr(const char* name, RGFW_rect rect, RGFW_windowF
     RGFW_sendDebugInfo(RGFW_typeInfo, RGFW_infoWindow, RGFW_DEBUG_CTX(win, 0), "a new window was created");
 	RGFW_window_setMouseDefault(win);
 	RGFW_window_setFlags(win, flags);
+    
+    win->src.r = win->r;
 
 	RGFW_window_show(win);
-	return win; /*return newly created window */
+    return win; /*return newly created window */
 #endif
 #ifdef RGFW_WAYLAND
 	wayland:
@@ -4858,17 +4861,17 @@ RGFW_event* RGFW_window_checkEvent(RGFW_window* win) {
 	case ConfigureNotify: {
 		/* detect resize */
 		RGFW_window_checkMode(win);
-		if (E.xconfigure.width != win->r.w || E.xconfigure.height != win->r.h) {
+		if (E.xconfigure.width != win->src.r.w || E.xconfigure.height != win->src.r.h) {
 			win->event.type = RGFW_windowResized;
-			win->r = RGFW_RECT(win->r.x, win->r.y, E.xconfigure.width, E.xconfigure.height);
+			win->src.r = win->r = RGFW_RECT(win->src.r.x, win->src.r.y, E.xconfigure.width, E.xconfigure.height);
 			RGFW_windowResizedCallback(win, win->r);
 			break;
 		}
 
 		/* detect move */
-		if (E.xconfigure.x != win->r.x || E.xconfigure.y != win->r.y) {
+		if (E.xconfigure.x != win->src.r.x || E.xconfigure.y != win->src.r.y) {
 			win->event.type = RGFW_windowMoved;
-			win->r = RGFW_RECT(E.xconfigure.x, E.xconfigure.y, win->r.w, win->r.h);
+            win->src.r = win->r = RGFW_RECT(E.xconfigure.x, E.xconfigure.y, win->src.r.w, win->src.r.h);
 			RGFW_windowMovedCallback(win, win->r);
 			break;
 		}
