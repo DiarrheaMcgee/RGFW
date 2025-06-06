@@ -89,3 +89,34 @@ cmake-build-*
 # VS code
 .vscode
 *.code-workspace
+
+# Examples
+examples/basic/basic
+examples/buffer/buffer
+examples/events/events
+examples/callbacks/callbacks
+examples/flags/flags
+examples/monitor/monitor
+examples/gl33_ctx/gl33_ctx
+examples/smooth-resize/smooth-resize
+examples/multi-window/multi-window
+examples/icons/icons
+examples/gamepad/gamepad
+examples/silk/silk
+examples/first-person-camera/camera
+examples/microui_demo/microui_demo
+examples/gl33/gl33
+examples/portableGL/pgl
+examples/gles2/gles2
+examples/osmesa_demo/osmesa_demo
+examples/vk10/vk10
+examples/vk10/shaders/vert.h
+examples/vk10/shaders/frag.h
+examples/minimal_links/minimal_links
+examples/gears/gears
+examples/dx11/dx11.exe
+
+# Unix binary formats
+*.a
+*.o
+*.so
