@@ -3221,13 +3221,14 @@ This is where OS specific stuff starts
 
 			for (i = 0; i < _RGFW->gamepadCount; i++) {
 				struct js_event e;
+                RGFW_MEMSET(&e, 0, sizeof(e));
 				if (_RGFW->gamepads[i] == 0)
 					continue;
 
 				i32 flags = fcntl(_RGFW->gamepads[i], F_GETFL, 0);
 				fcntl(_RGFW->gamepads[i], F_SETFL, flags | O_NONBLOCK);
 
-				ssize_t bytes;
+				ssize_t bytes = 0;
 				while ((bytes = read(_RGFW->gamepads[i], &e, sizeof(e))) > 0) {
 					switch (e.type) {
 						case JS_EVENT_BUTTON: {
@@ -3871,7 +3872,7 @@ RGFW_GOTO_WAYLAND(0);
 #define RGFW_LOAD_LIBRARY(x, lib) if (x == NULL) x = dlopen(lib, RTLD_LAZY | RTLD_LOCAL)
 #define RGFW_PROC_DEF(proc, name) if (name##SRC == NULL && proc != NULL) { \
 	void* ptr = dlsym(proc, #name); \
-	if (ptr != NULL) memcpy(&name##SRC, &ptr, sizeof(PFN_##name)); \
+	if (ptr != NULL) RGFW_MEMCPY(&name##SRC, &ptr, sizeof(PFN_##name)); \
 }
 
 #ifdef RGFW_X11
@@ -4097,7 +4098,7 @@ i32 RGFW_initPlatform(void) {
         }
         for(int i = evdesc->min_key_code; i <= evdesc->max_key_code; i++){
     	    for(int j = desc->min_key_code; j <= desc->max_key_code; j++){
-                if(strncmp(evdesc->names->keys[i].name, desc->names->keys[j].name, XkbKeyNameLength) == 0){
+                if(RGFW_STRNCMP(evdesc->names->keys[i].name, desc->names->keys[j].name, XkbKeyNameLength) == 0){
                     _RGFW->keycodes[j] = old[i];
                     break;
                 }
@@ -6296,7 +6297,8 @@ void RGFW_window_eventWait(RGFW_window* win, i32 waitMS) {
 	/* drain any data in the stop request */
 	if (_RGFW->eventWait_forceStop[2]) {
 		char data[64];
-		(void)!read(_RGFW->eventWait_forceStop[0], data, sizeof(data));
+        RGFW_MEMSET(data, 0, sizeof(data));
+        (void)!read(_RGFW->eventWait_forceStop[0], data, sizeof(data));
 
 		_RGFW->eventWait_forceStop[2] = 0;
 	}
