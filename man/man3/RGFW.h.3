@@ -52,40 +52,43 @@ RGFW.h
 
 .in +1c
 .ti -1c
+.RI "#define \fBRGFW_USERPTR\fP   NULL"
+.br
+.ti -1c
 .RI "#define \fBRGFW_UNUSED\fP(x)   (void)(x)"
 .br
 .ti -1c
 .RI "#define \fBRGFW_ROUND\fP(x)   (\fBi32\fP)((x) >= 0 ? (x) + 0\&.5f : (x) \- 0\&.5f)"
 .br
 .ti -1c
-.RI "#define \fBRGFW_ALLOC\fP(n)   malloc(n)"
+.RI "#define \fBRGFW_ALLOC\fP   malloc"
 .br
 .ti -1c
-.RI "#define \fBRGFW_FREE\fP(n)   free(n)"
+.RI "#define \fBRGFW_FREE\fP   free"
 .br
 .ti -1c
 .RI "#define \fBRGFW_ASSERT\fP   assert"
 .br
 .ti -1c
-.RI "#define \fBRGFW_MEMSET\fP   memset"
+.RI "#define \fBRGFW_MEMSET\fP(ptr,  value,  num)   memset(ptr, value, num)"
 .br
 .ti -1c
-.RI "#define \fBRGFW_MEMCPY\fP   memcpy"
+.RI "#define \fBRGFW_MEMCPY\fP(dist,  src,  len)   memcpy(dist, src, len)"
 .br
 .ti -1c
-.RI "#define \fBRGFW_STRNCMP\fP   strncmp"
+.RI "#define \fBRGFW_STRNCMP\fP(s1,  s2,  max)   strncmp(s1, s2, max)"
 .br
 .ti -1c
-.RI "#define \fBRGFW_STRNCPY\fP   strncpy"
+.RI "#define \fBRGFW_STRNCPY\fP(dist,  src,  len)   strncpy(dist, src, len)"
 .br
 .ti -1c
-.RI "#define \fBRGFW_STRSTR\fP   strstr"
+.RI "#define \fBRGFW_STRSTR\fP(str,  substr)   strstr(str, substr)"
 .br
 .ti -1c
-.RI "#define \fBRGFW_STRTOL\fP   strtol"
+.RI "#define \fBRGFW_STRTOL\fP(str,  endptr,  base)   strtol(str, endptr, base)"
 .br
 .ti -1c
-.RI "#define \fBRGFW_ATOF\fP   atof"
+.RI "#define \fBRGFW_ATOF\fP(num)   atof(num)"
 .br
 .ti -1c
 .RI "#define \fBRGFWDEF\fP   inline"
@@ -764,13 +767,13 @@ RGFW.h
 .in -1c
 .SH "Macro Definition Documentation"
 .PP 
-.SS "#define RGFW_ALLOC(n)   malloc(n)"
+.SS "#define RGFW_ALLOC   malloc"
 
 .SS "#define RGFW_AREA(w, h)   (\fBRGFW_area\fP){(\fBu32\fP)(w), (\fBu32\fP)(h)}"
 
 .SS "#define RGFW_ASSERT   assert"
 
-.SS "#define RGFW_ATOF   atof"
+.SS "#define RGFW_ATOF(num)   atof(num)"
 
 .SS "#define RGFW_BIT(x)   (1 << x)"
 
@@ -784,7 +787,7 @@ RGFW.h
 
 .SS "#define RGFW_FALSE   (\fBRGFW_bool\fP)0"
 
-.SS "#define RGFW_FREE(n)   free(n)"
+.SS "#define RGFW_FREE   free"
 
 .SS "#define RGFW_HEADER"
 
@@ -796,9 +799,9 @@ RGFW.h
 
 .SS "#define RGFW_MAX_PATH   260 /* max length of a path (for dnd) */"
 
-.SS "#define RGFW_MEMCPY   memcpy"
+.SS "#define RGFW_MEMCPY(dist, src, len)   memcpy(dist, src, len)"
 
-.SS "#define RGFW_MEMSET   memset"
+.SS "#define RGFW_MEMSET(ptr, value, num)   memset(ptr, value, num)"
 
 .SS "#define RGFW_OPENGL"
 
@@ -808,17 +811,19 @@ RGFW.h
 
 .SS "#define RGFW_ROUND(x)   (\fBi32\fP)((x) >= 0 ? (x) + 0\&.5f : (x) \- 0\&.5f)"
 
-.SS "#define RGFW_STRNCMP   strncmp"
+.SS "#define RGFW_STRNCMP(s1, s2, max)   strncmp(s1, s2, max)"
 
-.SS "#define RGFW_STRNCPY   strncpy"
+.SS "#define RGFW_STRNCPY(dist, src, len)   strncpy(dist, src, len)"
 
-.SS "#define RGFW_STRSTR   strstr"
+.SS "#define RGFW_STRSTR(str, substr)   strstr(str, substr)"
 
-.SS "#define RGFW_STRTOL   strtol"
+.SS "#define RGFW_STRTOL(str, endptr, base)   strtol(str, endptr, base)"
 
 .SS "#define RGFW_TRUE   (\fBRGFW_bool\fP)1"
 
 .SS "#define RGFW_UNUSED(x)   (void)(x)"
+
+.SS "#define RGFW_USERPTR   NULL"
 
 .SS "#define RGFWDEF   inline"
 
