@@ -6240,8 +6240,7 @@ void RGFW_window_close(RGFW_window* win) {
 
 		#if defined(RGFW_BUFFER)
 			wl_buffer_destroy(win->src.wl_buffer);
-			if ((win->_flags & RGFW_BUFFER_ALLOC))
-			RGFW_FREE(win->buffer);
+			if ((win->_flags & RGFW_BUFFER_ALLOC)) RGFW_FREE(win->buffer);
 			munmap(win->src.buffer, (size_t)(win->r.w * win->r.h * 4));
     		#endif
     	
