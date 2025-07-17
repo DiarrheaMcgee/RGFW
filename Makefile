@@ -4,6 +4,10 @@ CC             ?= cc
 AR             ?= ar
 .DEFAULT_GOAL   = all
 
+NO_GLES ?= 1
+NO_OSMESA ?= 1
+NO_EGL ?= 1
+
 DETECTED_OS = $(shell uname 2>/dev/null || echo Unknown)
 
 ifneq (,$(filter $(CC),emcc em++))
@@ -52,7 +56,6 @@ $(OUT):
 
 $(OUT)/%$(EXT): RGFW.h | $(OUT)
 	@mkdir -p $(dir $@)
-	@echo DETECTED_OS: $(DETECTED_OS)
 	$(CC) -o $@ $(DEFAULT_CFLAGS) $(CFLAGS) $(LIBS) $^
 
 $(OUT)/%.o: | $(OUT)
@@ -71,10 +74,8 @@ $(OUT)/RGFW.o: DEFAULT_CFLAGS += -x c -D RGFW_NO_API -D RGFW_EXPORT -D RGFW_IMPL
 $(OUT)/RGFW.o: RGFW.h
 
 $(OUT)/libRGFW.a: $(OUT)/RGFW.o
-libRGFW.a: $(OUT)/libRGFW.a
 
 $(OUT)/libRGFW.so: $(OUT)/RGFW.o
-libRGFW.so: $(OUT)/libRGFW.so
 
 $(OUT)/basic: LIBS += $(WASM_LINK_GL1)
 $(OUT)/basic: examples/basic/basic.c
@@ -170,18 +171,18 @@ EVERYTHING := \
 
 ifeq ($(DETECTED_OS),Linux)
 	EVERYTHING += vk10
+endif
 
-	ifneq ($(NO_GLES), 1)
-		EVERYTHING += gles2
-	endif
+ifneq ($(NO_GLES), 1)
+	EVERYTHING += gles2
+endif
 
-	ifneq ($(NO_OSMESA),1)
-		EVERYTHING += osmesa_demo
-	endif
+ifneq ($(NO_OSMESA),1)
+	EVERYTHING += osmesa_demo
+endif
 
-	ifneq ($(NO_EGL),1)
-		EVERYTHING += egl
-	endif
+ifneq ($(NO_EGL),1)
+	EVERYTHING += egl
 endif
 
 ifeq ($(DETECTED_OS),Darwin)
