@@ -4,10 +4,10 @@ CC             ?= cc
 AR             ?= ar
 .DEFAULT_GOAL   = all
 
-DETECTED_OS := $(shell uname 2>/dev/null || echo Unknown)
+DETECTED_OS = $(shell uname 2>/dev/null || echo Unknown)
 
 ifneq (,$(filter $(CC),emcc em++))
-	DETECTED_OS := web
+	DETECTED_OS = web
 endif
 
 ifeq ($(DETECTED_OS),Linux)
@@ -50,17 +50,31 @@ clean:
 $(OUT):
 	mkdir -p $(OUT)
 
-$(OUT)/%: RGFW.h | $(OUT)
+$(OUT)/%$(EXT): RGFW.h | $(OUT)
 	@mkdir -p $(dir $@)
+	@echo DETECTED_OS: $(DETECTED_OS)
 	$(CC) -o $@ $(DEFAULT_CFLAGS) $(CFLAGS) $(LIBS) $^
 
-%.a: RGFW.h | $(OUT)
+$(OUT)/%.o: | $(OUT)
 	@mkdir -p $(dir $@)
-	ar rcsu $@ $^
+	$(CC) -c -o $@ -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $^
 
-%.so: RGFW.h | $(OUT)
+$(OUT)/%.a: | $(OUT)
 	@mkdir -p $(dir $@)
-	$(CC) -shared -o $@ $(DEFAULT_CFLAGS) $(CFLAGS) $(LIBS) $^
+	ar rcs $@ $^
+
+$(OUT)/%.so: | $(OUT)
+	@mkdir -p $(dir $@)
+	$(CC) -shared -o $@ -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $(LIBS) $^
+
+$(OUT)/RGFW.o: DEFAULT_CFLAGS += -x c -D RGFW_NO_API -D RGFW_EXPORT -D RGFW_IMPLEMENTATION
+$(OUT)/RGFW.o: RGFW.h
+
+$(OUT)/libRGFW.a: $(OUT)/RGFW.o
+libRGFW.a: $(OUT)/libRGFW.a
+
+$(OUT)/libRGFW.so: $(OUT)/RGFW.o
+libRGFW.so: $(OUT)/libRGFW.so
 
 $(OUT)/basic: LIBS += $(WASM_LINK_GL1)
 $(OUT)/basic: examples/basic/basic.c
@@ -124,13 +138,10 @@ $(OUT)/vk10: examples/vk10/vk10.c
 	glslangValidator -V examples/vk10/shaders/frag.frag -o $(OUT)/shaders/frag.h --vn frag_code
 	$(CC) -o $@ $(DEFAULT_CFLAGS) $(CFLAGS) $(VULKAN_LIBS) -I$(OUT) $^
 
-
 $(OUT)/dx11: examples/dx11/dx11.c
 
 $(OUT)/metal: LIBS += -framework Metal -framework QuartzCore
-$(OUT)/metal: examples/metal/metal.m
-	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) -x c -c RGFW.h -D RGFW_NO_API -D RGFW_EXPORT -D RGFW_IMPLEMENTATION -o RGFW.o
-	$(CC) -o $@ $(DEFAULT_CFLAGS) $(CFLAGS) $(LIBS) $^ RGFW.o
+$(OUT)/metal: examples/metal/metal.m $(OUT)/RGFW.o
 
 $(OUT)/webgpu: LIBS := -s USE_WEBGPU=1
 $(OUT)/webgpu: examples/webgpu/webgpu.c
