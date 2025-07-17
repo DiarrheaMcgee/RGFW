@@ -77,80 +77,80 @@ $(OUT)/libRGFW.a: $(OUT)/RGFW.o
 
 $(OUT)/libRGFW.so: $(OUT)/RGFW.o
 
-$(OUT)/basic: LIBS += $(WASM_LINK_GL1)
-$(OUT)/basic: examples/basic/basic.c
+$(OUT)/basic$(EXT): LIBS += $(WASM_LINK_GL1)
+$(OUT)/basic$(EXT): examples/basic/basic.c
 
-$(OUT)/buffer: LIBS += $(WASM_LINK_GL1)
-$(OUT)/buffer: examples/buffer/buffer.c
+$(OUT)/buffer$(EXT): LIBS += $(WASM_LINK_GL1)
+$(OUT)/buffer$(EXT): examples/buffer/buffer.c
 
-$(OUT)/events: LIBS += $(WASM_LINK_GL1)
-$(OUT)/events: examples/events/events.c
+$(OUT)/events$(EXT): LIBS += $(WASM_LINK_GL1)
+$(OUT)/events$(EXT): examples/events/events.c
 
-$(OUT)/callbacks: LIBS += $(WASM_LINK_GL1)
-$(OUT)/callbacks: examples/callbacks/callbacks.c
+$(OUT)/callbacks$(EXT): LIBS += $(WASM_LINK_GL1)
+$(OUT)/callbacks$(EXT): examples/callbacks/callbacks.c
 
-$(OUT)/flags: LIBS += $(WASM_LINK_GL1)
-$(OUT)/flags: examples/flags/flags.c
+$(OUT)/flags$(EXT): LIBS += $(WASM_LINK_GL1)
+$(OUT)/flags$(EXT): examples/flags/flags.c
 
-$(OUT)/monitor: LIBS += $(WASM_LINK_GL1)
-$(OUT)/monitor: examples/monitor/monitor.c
+$(OUT)/monitor$(EXT): LIBS += $(WASM_LINK_GL1)
+$(OUT)/monitor$(EXT): examples/monitor/monitor.c
 
-$(OUT)/gl33_ctx: LIBS += $(WASM_LINK_GL1)
-$(OUT)/gl33_ctx: examples/gl33_ctx/gl33_ctx.c
+$(OUT)/gl33_ctx$(EXT): LIBS += $(WASM_LINK_GL1)
+$(OUT)/gl33_ctx$(EXT): examples/gl33_ctx/gl33_ctx.c
 
-$(OUT)/smooth-resize: LIBS += $(WASM_LINK_GL1)
-$(OUT)/smooth-resize: examples/smooth-resize/smooth-resize.c
+$(OUT)/smooth-resize$(EXT): LIBS += $(WASM_LINK_GL1)
+$(OUT)/smooth-resize$(EXT): examples/smooth-resize/smooth-resize.c
 
-$(OUT)/multi-window: LIBS += $(WASM_LINK_GL1)
-$(OUT)/multi-window: examples/multi-window/multi-window.c
+$(OUT)/multi-window$(EXT): LIBS += $(WASM_LINK_GL1)
+$(OUT)/multi-window$(EXT): examples/multi-window/multi-window.c
 
-$(OUT)/icons: LIBS += -lm $(WASM_LINK_GL1)
-$(OUT)/icons: examples/icons/icons.c
+$(OUT)/icons$(EXT): LIBS += -lm $(WASM_LINK_GL1)
+$(OUT)/icons$(EXT): examples/icons/icons.c
 
-$(OUT)/gamepad: LIBS += -lm $(WASM_LINK_GL1)
-$(OUT)/gamepad: examples/gamepad/gamepad.c
+$(OUT)/gamepad$(EXT): LIBS += -lm $(WASM_LINK_GL1)
+$(OUT)/gamepad$(EXT): examples/gamepad/gamepad.c
 
-$(OUT)/silk: LIBS += -lm $(WASM_LINK_GL1)
-$(OUT)/silk: examples/silk/silk.c
+$(OUT)/silk$(EXT): LIBS += -lm $(WASM_LINK_GL1)
+$(OUT)/silk$(EXT): examples/silk/silk.c
 
-$(OUT)/camera: LIBS += -lm $(WASM_LINK_GL1)
-$(OUT)/camera: examples/first-person-camera/camera.c
+$(OUT)/camera$(EXT): LIBS += -lm $(WASM_LINK_GL1)
+$(OUT)/camera$(EXT): examples/first-person-camera/camera.c
 
-$(OUT)/microui_demo: LIBS += $(WASM_LINK_GL1)
-$(OUT)/microui_demo: examples/microui_demo/microui_demo.c
+$(OUT)/microui_demo$(EXT): LIBS += $(WASM_LINK_GL1)
+$(OUT)/microui_demo$(EXT): examples/microui_demo/microui_demo.c
 
-$(OUT)/gl33: LIBS += $(WASM_LINK_GL3)
-$(OUT)/gl33: examples/gl33/gl33.c
+$(OUT)/gl33$(EXT): LIBS += $(WASM_LINK_GL3)
+$(OUT)/gl33$(EXT): examples/gl33/gl33.c
 
-$(OUT)/pgl: LIBS += -lm
-$(OUT)/pgl: examples/portableGL/pgl.c
+$(OUT)/pgl$(EXT): LIBS += -lm
+$(OUT)/pgl$(EXT): examples/portableGL/pgl.c
 
-$(OUT)/gles2: LIBS += $(WASM_LINK_GL2)
-$(OUT)/gles2: examples/gles2/gles2.c
+$(OUT)/gles2$(EXT): LIBS += $(WASM_LINK_GL2)
+$(OUT)/gles2$(EXT): examples/gles2/gles2.c
 
-$(OUT)/egl: LIBS += -lEGL
-$(OUT)/egl: examples/egl/egl.c
+$(OUT)/egl$(EXT): LIBS += -lEGL
+$(OUT)/egl$(EXT): examples/egl/egl.c
 
-$(OUT)/osmesa_demo: examples/osmesa_demo/osmesa_demo.c
+$(OUT)/osmesa_demo$(EXT): examples/osmesa_demo/osmesa_demo.c
 
-$(OUT)/vk10: examples/vk10/vk10.c
+$(OUT)/vk10$(EXT): examples/vk10/vk10.c
 	@mkdir -p $(OUT)/shaders
 	glslangValidator -V examples/vk10/shaders/vert.vert -o $(OUT)/shaders/vert.h --vn vert_code
 	glslangValidator -V examples/vk10/shaders/frag.frag -o $(OUT)/shaders/frag.h --vn frag_code
 	$(CC) -o $@ $(DEFAULT_CFLAGS) $(CFLAGS) $(VULKAN_LIBS) -I$(OUT) $^
 
-$(OUT)/dx11: examples/dx11/dx11.c
+$(OUT)/dx11$(EXT): examples/dx11/dx11.c
 
-$(OUT)/metal: LIBS += -framework Metal -framework QuartzCore
-$(OUT)/metal: examples/metal/metal.m $(OUT)/RGFW.o
+$(OUT)/metal$(EXT): LIBS += -framework Metal -framework QuartzCore
+$(OUT)/metal$(EXT): examples/metal/metal.m $(OUT)/RGFW.o
 
-$(OUT)/webgpu: LIBS := -s USE_WEBGPU=1
-$(OUT)/webgpu: examples/webgpu/webgpu.c
+$(OUT)/webgpu$(EXT): LIBS := -s USE_WEBGPU=1
+$(OUT)/webgpu$(EXT): examples/webgpu/webgpu.c
 
-$(OUT)/minimal_links: examples/minimal_links/minimal_links.c
+$(OUT)/minimal_links$(EXT): examples/minimal_links/minimal_links.c
 
-$(OUT)/gears: LIBS += -lm $(WASM_LINK_GL1)
-$(OUT)/gears: examples/gears/gears.c
+$(OUT)/gears$(EXT): LIBS += -lm $(WASM_LINK_GL1)
+$(OUT)/gears$(EXT): examples/gears/gears.c
 
 EVERYTHING := \
 	basic \
@@ -173,7 +173,7 @@ ifeq ($(DETECTED_OS),Linux)
 	EVERYTHING += vk10
 endif
 
-ifneq ($(NO_GLES), 1)
+ifneq ($(NO_GLES),1)
 	EVERYTHING += gles2
 endif
 
