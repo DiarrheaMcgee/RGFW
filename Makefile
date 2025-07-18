@@ -1,5 +1,4 @@
 DEFAULT_CFLAGS := -I./
-CFLAGS         ?= -Og -ggdb3
 CC             ?= cc
 AR             ?= ar
 .DEFAULT_GOAL   = all
@@ -14,13 +13,20 @@ ifneq (,$(filter $(CC),emcc em++))
 	DETECTED_OS := web
 endif
 
-ifeq (,$(filter $(CC),em++ g++ clang++))
-	DEFAULT_CFLAGS += -std=c99 -Werror -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wnested-externs -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
-	CPEEPEE := 0
-else
+ifeq ($(CC),g++)
 	DEFAULT_CFLAGS += -x c -Wall -Werror -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
 	CPEEPEE := 1
+else ifeq ($(CC),clang++)
+	DEFAULT_CFLAGS += -x c -Wall -Werror -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
+	CPEEPEE := 1
+else ifeq ($(CC),em++)
+	DEFAULT_CFLAGS += -x c
+	CPEEPEE := 1
+else
+	DEFAULT_CFLAGS += -std=c99 -Werror -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wnested-externs -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
+	CPEEPEE := 0
 endif
+
 
 ifneq ($(CC),zig cc)
 	DEFAULT_CFLAGS += -D _WIN32_WINNT=0x0501
@@ -58,6 +64,7 @@ else ifeq ($(DETECTED_OS),web)
 	WASM_LINK_GL2 := -s FULL_ES2 -s USE_WEBGL2
 	WASM_LINK_GL3 := -s FULL_ES3 -s USE_WEBGL2
 	WASM_LINK_OSMESA := -sALLOW_MEMORY_GROWTH
+	WASM_LINK_MICROUI := -s USE_WEBGL2 $(WASM_LINK_GL1)
 	LIBS := -s WASM=1 -s ASYNCIFY -s GL_SUPPORT_EXPLICIT_SWAP_CONTROL=1 -s EXPORTED_RUNTIME_METHODS="['stringToNewUTF8']"
 
 endif
@@ -98,7 +105,7 @@ $(OUT)/icons$(EXT):         LIBS += -lm $(WASM_LINK_GL1)
 $(OUT)/gamepad$(EXT):       LIBS += -lm $(WASM_LINK_GL1)
 $(OUT)/silk$(EXT):          LIBS += -lm $(WASM_LINK_GL1)
 $(OUT)/camera$(EXT):        LIBS += -lm $(WASM_LINK_GL1)
-$(OUT)/microui_demo$(EXT):  LIBS += $(WASM_LINK_GL1) $(WASM_LINK_GL2)
+$(OUT)/microui_demo$(EXT):  LIBS += $(WASM_LINK_MICROUI)
 $(OUT)/gl33$(EXT):          LIBS += $(WASM_LINK_GL3)
 $(OUT)/portableGL$(EXT):    LIBS += -lm
 $(OUT)/gles2$(EXT):         LIBS += $(WASM_LINK_GL2)
