@@ -1,4 +1,4 @@
-DEFAULT_CFLAGS := -pipe -march=native -std=c99 -pedantic -Wall -I./
+DEFAULT_CFLAGS := -pipe -Wall -I./
 CFLAGS         ?= -Og -ggdb3
 CC             ?= cc
 AR             ?= ar
