@@ -14,6 +14,17 @@ ifneq (,$(filter $(CC),emcc em++))
 	DETECTED_OS := web
 endif
 
+ifeq (,$(filter $(CC),em++ g++ clang++))
+	DEFAULT_CFLAGS += -std=c99
+	CPEEPEE := 1
+else
+	CPEEPEE := 0
+endif
+
+ifneq ($(CC),zig cc)
+	DEFAULT_CFLAGS += -D _WIN32_WINNT=0x0501
+endif
+
 ifeq ($(DETECTED_OS),Linux)
 
 	ifeq ($(RGFW_WAYLAND),1)
@@ -27,7 +38,7 @@ ifeq ($(DETECTED_OS),Linux)
 		endif
 
 	else
-		LIBS := -ldl -lGL -lXrandr -lX11
+		LIBS := -lX11 -lXrandr -ldl -lGL
 		VULKAN_LIBS := -lX11 -lXrandr -ldl -lpthread -lvulkan
 	endif
 
@@ -57,7 +68,7 @@ $(OUT):
 
 $(OUT)/%$(EXT): RGFW.h | $(OUT)
 	@mkdir -p $(dir $@)
-	$(CC) -o $@ $(DEFAULT_CFLAGS) $(CFLAGS) $(LIBS) examples/$(basename $(notdir $@))/$(basename $(notdir $@)).c
+	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) $(LIBS) examples/$(basename $(notdir $@))/$(basename $(notdir $@)).c -o $@
 
 $(OUT)/RGFW.o: DEFAULT_CFLAGS += -x c -D RGFW_NO_API -D RGFW_EXPORT -D RGFW_IMPLEMENTATION
 $(OUT)/RGFW.o: RGFW.h | $(OUT)
@@ -67,7 +78,7 @@ $(OUT)/libRGFW.a: $(OUT)/RGFW.o | $(OUT)
 	ar rcs $@ $^
 
 $(OUT)/libRGFW.so: $(OUT)/RGFW.o | $(OUT)
-	$(CC) -shared -o $@ -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $(LIBS) $^
+	$(CC) -shared -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $(LIBS) $^ -o $@
 
 $(OUT)/basic$(EXT):         LIBS += $(WASM_LINK_GL1)
 $(OUT)/buffer$(EXT):        LIBS += $(WASM_LINK_GL1)
@@ -82,24 +93,24 @@ $(OUT)/icons$(EXT):         LIBS += -lm $(WASM_LINK_GL1)
 $(OUT)/gamepad$(EXT):       LIBS += -lm $(WASM_LINK_GL1)
 $(OUT)/silk$(EXT):          LIBS += -lm $(WASM_LINK_GL1)
 $(OUT)/camera$(EXT):        LIBS += -lm $(WASM_LINK_GL1)
-$(OUT)/microui_demo$(EXT):  LIBS += $(WASM_LINK_GL1)
+$(OUT)/microui_demo$(EXT):  LIBS += $(WASM_LINK_GL1) $(WASM_LINK_GL2)
 $(OUT)/gl33$(EXT):          LIBS += $(WASM_LINK_GL3)
 $(OUT)/portableGL$(EXT):    LIBS += -lm
 $(OUT)/gles2$(EXT):         LIBS += $(WASM_LINK_GL2)
 $(OUT)/egl$(EXT):           LIBS += -lEGL
 $(OUT)/webgpu$(EXT):        LIBS := -s USE_WEBGPU=1
 $(OUT)/gears$(EXT):         LIBS += -lm $(WASM_LINK_GL1)
-$(OUT)/osmesa_demo$(EXT):   LIBS += -lOSMesa -lm $(WASM_LINK_OSMESA)
+$(OUT)/osmesa_demo$(EXT):   LIBS += -lm -lOSMesa $(WASM_LINK_OSMESA)
 
 $(OUT)/metal$(EXT): LIBS += -framework Metal -framework QuartzCore
 $(OUT)/metal$(EXT): examples/metal/metal.m $(OUT)/RGFW.o
-	$(CC) -o $@ $(DEFAULT_CFLAGS) $(CFLAGS) $(LIBS) $^
+	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) $(LIBS) $^ -o $@
 
 $(OUT)/vk10$(EXT): examples/vk10/vk10.c
 	@mkdir -p $(OUT)/shaders
 	glslangValidator -V examples/vk10/shaders/vert.vert -o $(OUT)/shaders/vert.h --vn vert_code
 	glslangValidator -V examples/vk10/shaders/frag.frag -o $(OUT)/shaders/frag.h --vn frag_code
-	$(CC) -o $@ $(DEFAULT_CFLAGS) $(CFLAGS) $(VULKAN_LIBS) -I$(OUT) $^
+	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) $(VULKAN_LIBS) -I$(OUT) $^ -o $@
 
 EVERYTHING := \
 	basic \
@@ -113,7 +124,6 @@ EVERYTHING := \
 	multi-window \
 	icons \
 	gamepad \
-	silk \
 	camera \
 	gl33 \
 	gles2 \
@@ -134,12 +144,16 @@ ifneq ($(NO_EGL),1)
 	EVERYTHING += egl
 endif
 
+ifeq ($(CPEEPEE),0)
+	EVERYTHING += silk
+endif
+
 ifeq ($(DETECTED_OS),Darwin)
 	EVERYTHING += metal
 endif
 
 ifeq ($(DETECTED_OS),web)
-	EVERYTHING += webgpu
+	EVERYTHING += webgpu microui_demo
 else
 	EVERYTHING += \
 		      portableGL \
