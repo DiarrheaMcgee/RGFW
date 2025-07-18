@@ -1,4 +1,4 @@
-DEFAULT_CFLAGS := -pipe -Wall -I./
+DEFAULT_CFLAGS := -Wall -I./
 CFLAGS         ?= -Og -ggdb3
 CC             ?= cc
 AR             ?= ar
@@ -15,9 +15,10 @@ ifneq (,$(filter $(CC),emcc em++))
 endif
 
 ifeq (,$(filter $(CC),em++ g++ clang++))
-	DEFAULT_CFLAGS += -std=c99
+	DEFAULT_CFLAGS += -std=c99 -Werror -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wnested-externs -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
 	CPEEPEE := 1
 else
+	DEFAULT_CFLAGS += -Wall -Werror -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
 	CPEEPEE := 0
 endif
 
@@ -45,6 +46,10 @@ ifeq ($(DETECTED_OS),Linux)
 else ifeq ($(DETECTED_OS),Darwin)
 
 	LIBS := -framework CoreVideo -framework Cocoa -framework OpenGL -framework IOKit
+
+	ifeq ($(CPEEPEE),0)
+		DEFAULT_CFLAGS += -Wno-deprecated -Wno-unknown-warning-option -Wno-pedantic
+	endif
 
 else ifeq ($(DETECTED_OS),web)
 
