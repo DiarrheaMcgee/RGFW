@@ -1,5 +1,5 @@
 #define PORTABLEGL_IMPLEMENTATION
-#include "portablegl.h"
+#include "portableGL.h"
 
 #define u8 u8
 

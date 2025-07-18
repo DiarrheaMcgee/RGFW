@@ -56,101 +56,49 @@ $(OUT):
 
 $(OUT)/%$(EXT): RGFW.h | $(OUT)
 	@mkdir -p $(dir $@)
-	$(CC) -o $@ $(DEFAULT_CFLAGS) $(CFLAGS) $(LIBS) $^
-
-$(OUT)/%.o: | $(OUT)
-	@mkdir -p $(dir $@)
-	$(CC) -c -o $@ -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $^
-
-$(OUT)/%.a: | $(OUT)
-	@mkdir -p $(dir $@)
-	ar rcs $@ $^
-
-$(OUT)/%.so: | $(OUT)
-	@mkdir -p $(dir $@)
-	$(CC) -shared -o $@ -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $(LIBS) $^
+	$(CC) -o $@ $(DEFAULT_CFLAGS) $(CFLAGS) $(LIBS) examples/$(basename $(notdir $@))/$(basename $(notdir $@)).c
 
 $(OUT)/RGFW.o: DEFAULT_CFLAGS += -x c -D RGFW_NO_API -D RGFW_EXPORT -D RGFW_IMPLEMENTATION
-$(OUT)/RGFW.o: RGFW.h
+$(OUT)/RGFW.o: RGFW.h | $(OUT)
+	$(CC) -c -o $@ -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $^
 
-$(OUT)/libRGFW.a: $(OUT)/RGFW.o
+$(OUT)/libRGFW.a: $(OUT)/RGFW.o | $(OUT)
+	ar rcs $@ $^
 
-$(OUT)/libRGFW.so: $(OUT)/RGFW.o
+$(OUT)/libRGFW.so: $(OUT)/RGFW.o | $(OUT)
+	$(CC) -shared -o $@ -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $(LIBS) $^
 
-$(OUT)/basic$(EXT): LIBS += $(WASM_LINK_GL1)
-$(OUT)/basic$(EXT): examples/basic/basic.c
-
-$(OUT)/buffer$(EXT): LIBS += $(WASM_LINK_GL1)
-$(OUT)/buffer$(EXT): examples/buffer/buffer.c
-
-$(OUT)/events$(EXT): LIBS += $(WASM_LINK_GL1)
-$(OUT)/events$(EXT): examples/events/events.c
-
-$(OUT)/callbacks$(EXT): LIBS += $(WASM_LINK_GL1)
-$(OUT)/callbacks$(EXT): examples/callbacks/callbacks.c
-
-$(OUT)/flags$(EXT): LIBS += $(WASM_LINK_GL1)
-$(OUT)/flags$(EXT): examples/flags/flags.c
-
-$(OUT)/monitor$(EXT): LIBS += $(WASM_LINK_GL1)
-$(OUT)/monitor$(EXT): examples/monitor/monitor.c
-
-$(OUT)/gl33_ctx$(EXT): LIBS += $(WASM_LINK_GL1)
-$(OUT)/gl33_ctx$(EXT): examples/gl33_ctx/gl33_ctx.c
-
+$(OUT)/basic$(EXT):         LIBS += $(WASM_LINK_GL1)
+$(OUT)/buffer$(EXT):        LIBS += $(WASM_LINK_GL1)
+$(OUT)/events$(EXT):        LIBS += $(WASM_LINK_GL1)
+$(OUT)/callbacks$(EXT):     LIBS += $(WASM_LINK_GL1)
+$(OUT)/flags$(EXT):         LIBS += $(WASM_LINK_GL1)
+$(OUT)/monitor$(EXT):       LIBS += $(WASM_LINK_GL1)
+$(OUT)/gl33_ctx$(EXT):      LIBS += $(WASM_LINK_GL1)
 $(OUT)/smooth-resize$(EXT): LIBS += $(WASM_LINK_GL1)
-$(OUT)/smooth-resize$(EXT): examples/smooth-resize/smooth-resize.c
+$(OUT)/multi-window$(EXT):  LIBS += $(WASM_LINK_GL1)
+$(OUT)/icons$(EXT):         LIBS += -lm $(WASM_LINK_GL1)
+$(OUT)/gamepad$(EXT):       LIBS += -lm $(WASM_LINK_GL1)
+$(OUT)/silk$(EXT):          LIBS += -lm $(WASM_LINK_GL1)
+$(OUT)/camera$(EXT):        LIBS += -lm $(WASM_LINK_GL1)
+$(OUT)/microui_demo$(EXT):  LIBS += $(WASM_LINK_GL1)
+$(OUT)/gl33$(EXT):          LIBS += $(WASM_LINK_GL3)
+$(OUT)/portableGL$(EXT):    LIBS += -lm
+$(OUT)/gles2$(EXT):         LIBS += $(WASM_LINK_GL2)
+$(OUT)/egl$(EXT):           LIBS += -lEGL
+$(OUT)/webgpu$(EXT): LIBS := -s USE_WEBGPU=1
+$(OUT)/minimal_links$(EXT): examples/minimal_links/minimal_links.c
+$(OUT)/gears$(EXT): LIBS += -lm $(WASM_LINK_GL1)
 
-$(OUT)/multi-window$(EXT): LIBS += $(WASM_LINK_GL1)
-$(OUT)/multi-window$(EXT): examples/multi-window/multi-window.c
-
-$(OUT)/icons$(EXT): LIBS += -lm $(WASM_LINK_GL1)
-$(OUT)/icons$(EXT): examples/icons/icons.c
-
-$(OUT)/gamepad$(EXT): LIBS += -lm $(WASM_LINK_GL1)
-$(OUT)/gamepad$(EXT): examples/gamepad/gamepad.c
-
-$(OUT)/silk$(EXT): LIBS += -lm $(WASM_LINK_GL1)
-$(OUT)/silk$(EXT): examples/silk/silk.c
-
-$(OUT)/camera$(EXT): LIBS += -lm $(WASM_LINK_GL1)
-$(OUT)/camera$(EXT): examples/first-person-camera/camera.c
-
-$(OUT)/microui_demo$(EXT): LIBS += $(WASM_LINK_GL1)
-$(OUT)/microui_demo$(EXT): examples/microui_demo/microui_demo.c
-
-$(OUT)/gl33$(EXT): LIBS += $(WASM_LINK_GL3)
-$(OUT)/gl33$(EXT): examples/gl33/gl33.c
-
-$(OUT)/pgl$(EXT): LIBS += -lm
-$(OUT)/pgl$(EXT): examples/portableGL/pgl.c
-
-$(OUT)/gles2$(EXT): LIBS += $(WASM_LINK_GL2)
-$(OUT)/gles2$(EXT): examples/gles2/gles2.c
-
-$(OUT)/egl$(EXT): LIBS += -lEGL
-$(OUT)/egl$(EXT): examples/egl/egl.c
-
-$(OUT)/osmesa_demo$(EXT): examples/osmesa_demo/osmesa_demo.c
+$(OUT)/metal$(EXT): LIBS += -framework Metal -framework QuartzCore
+$(OUT)/metal$(EXT): examples/metal/metal.m $(OUT)/RGFW.o
+	$(CC) -o $@ $(DEFAULT_CFLAGS) $(CFLAGS) $(LIBS) $^
 
 $(OUT)/vk10$(EXT): examples/vk10/vk10.c
 	@mkdir -p $(OUT)/shaders
 	glslangValidator -V examples/vk10/shaders/vert.vert -o $(OUT)/shaders/vert.h --vn vert_code
 	glslangValidator -V examples/vk10/shaders/frag.frag -o $(OUT)/shaders/frag.h --vn frag_code
 	$(CC) -o $@ $(DEFAULT_CFLAGS) $(CFLAGS) $(VULKAN_LIBS) -I$(OUT) $^
-
-$(OUT)/dx11$(EXT): examples/dx11/dx11.c
-
-$(OUT)/metal$(EXT): LIBS += -framework Metal -framework QuartzCore
-$(OUT)/metal$(EXT): examples/metal/metal.m $(OUT)/RGFW.o
-
-$(OUT)/webgpu$(EXT): LIBS := -s USE_WEBGPU=1
-$(OUT)/webgpu$(EXT): examples/webgpu/webgpu.c
-
-$(OUT)/minimal_links$(EXT): examples/minimal_links/minimal_links.c
-
-$(OUT)/gears$(EXT): LIBS += -lm $(WASM_LINK_GL1)
-$(OUT)/gears$(EXT): examples/gears/gears.c
 
 EVERYTHING := \
 	basic \
@@ -193,7 +141,7 @@ ifeq ($(DETECTED_OS),web)
 	EVERYTHING += webgpu
 else
 	EVERYTHING += \
-		      pgl \
+		      portableGL \
 		      gears
 endif
 
