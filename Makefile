@@ -11,7 +11,7 @@ NO_EGL ?= 1
 DETECTED_OS = $(shell uname 2>/dev/null || echo Unknown)
 
 ifneq (,$(filter $(CC),emcc em++))
-	DETECTED_OS = web
+	DETECTED_OS := web
 endif
 
 ifeq ($(DETECTED_OS),Linux)
@@ -38,9 +38,10 @@ else ifeq ($(DETECTED_OS),Darwin)
 else ifeq ($(DETECTED_OS),web)
 
 	EXT := .js
-	WASM_LINK_GL1 = -s LEGACY_GL_EMULATION -D LEGACY_GL_EMULATION -sGL_UNSAFE_OPTS=0
-	WASM_LINK_GL2 = -s FULL_ES2 -s USE_WEBGL2
-	WASM_LINK_GL3 = -s FULL_ES3 -s USE_WEBGL2
+	WASM_LINK_GL1 := -s LEGACY_GL_EMULATION -D LEGACY_GL_EMULATION -sGL_UNSAFE_OPTS=0
+	WASM_LINK_GL2 := -s FULL_ES2 -s USE_WEBGL2
+	WASM_LINK_GL3 := -s FULL_ES3 -s USE_WEBGL2
+	WASM_LINK_OSMESA := -sALLOW_MEMORY_GROWTH
 	LIBS := -s WASM=1 -s ASYNCIFY -s GL_SUPPORT_EXPLICIT_SWAP_CONTROL=1 -s EXPORTED_RUNTIME_METHODS="['stringToNewUTF8']"
 
 endif
@@ -86,9 +87,9 @@ $(OUT)/gl33$(EXT):          LIBS += $(WASM_LINK_GL3)
 $(OUT)/portableGL$(EXT):    LIBS += -lm
 $(OUT)/gles2$(EXT):         LIBS += $(WASM_LINK_GL2)
 $(OUT)/egl$(EXT):           LIBS += -lEGL
-$(OUT)/webgpu$(EXT): LIBS := -s USE_WEBGPU=1
-$(OUT)/minimal_links$(EXT): examples/minimal_links/minimal_links.c
-$(OUT)/gears$(EXT): LIBS += -lm $(WASM_LINK_GL1)
+$(OUT)/webgpu$(EXT):        LIBS := -s USE_WEBGPU=1
+$(OUT)/gears$(EXT):         LIBS += -lm $(WASM_LINK_GL1)
+$(OUT)/osmesa_demo$(EXT):   LIBS += -lOSMesa -lm $(WASM_LINK_OSMESA)
 
 $(OUT)/metal$(EXT): LIBS += -framework Metal -framework QuartzCore
 $(OUT)/metal$(EXT): examples/metal/metal.m $(OUT)/RGFW.o
