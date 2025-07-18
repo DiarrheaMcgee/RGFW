@@ -1,4 +1,4 @@
-DEFAULT_CFLAGS := -Wall -I./
+DEFAULT_CFLAGS := -I./
 CFLAGS         ?= -Og -ggdb3
 CC             ?= cc
 AR             ?= ar
@@ -15,11 +15,11 @@ ifneq (,$(filter $(CC),emcc em++))
 endif
 
 ifeq (,$(filter $(CC),em++ g++ clang++))
-	DEFAULT_CFLAGS += -x c -std=c99 -Werror -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wnested-externs -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
-	CPEEPEE := 1
-else
-	DEFAULT_CFLAGS += -Wall -Werror -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
+	DEFAULT_CFLAGS += -std=c99 -Werror -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wnested-externs -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
 	CPEEPEE := 0
+else
+	DEFAULT_CFLAGS += -x c -Wall -Werror -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
+	CPEEPEE := 1
 endif
 
 ifneq ($(CC),zig cc)
