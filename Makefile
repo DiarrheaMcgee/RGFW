@@ -15,7 +15,7 @@ ifneq (,$(filter $(CC),emcc em++))
 endif
 
 ifeq (,$(filter $(CC),em++ g++ clang++))
-	DEFAULT_CFLAGS += -std=c99 -Werror -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wnested-externs -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
+	DEFAULT_CFLAGS += -x c -std=c99 -Werror -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wnested-externs -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
 	CPEEPEE := 1
 else
 	DEFAULT_CFLAGS += -Wall -Werror -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
@@ -128,7 +128,6 @@ EVERYTHING := \
 	smooth-resize \
 	multi-window \
 	icons \
-	gamepad \
 	camera \
 	gl33 \
 	gles2 \
