@@ -172,7 +172,7 @@ int createGraphicsPipeline(vulkanContext* ctx) {
   color_blending.blendConstants[2] = 0.0f;
   color_blending.blendConstants[3] = 0.0f;
 
-  VkPushConstantRange range = {};
+  VkPushConstantRange range = {0};
   range.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
   range.offset = 0;
   range.size = sizeof(mouse_data);
