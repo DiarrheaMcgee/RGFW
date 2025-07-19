@@ -22,11 +22,16 @@ else ifeq ($(CC),clang++)
 else ifeq ($(CC),em++)
 	DEFAULT_CFLAGS += -x c
 	CPEEPEE := 1
-else ifneq ($(CC),emcc)
-	DEFAULT_CFLAGS += -std=c99 -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wnested-externs -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
+else
+	ifneq ($(CC),emcc)
+		DEFAULT_CFLAGS += -std=c99 -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wnested-externs -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
+	endif
 	CPEEPEE := 0
 endif
 
+ifeq ($(CPEEPEE),1)
+	NO_VULKAN := 1
+endif
 
 ifneq ($(CC),zig cc)
 	DEFAULT_CFLAGS += -D _WIN32_WINNT=0x0501
@@ -142,7 +147,7 @@ EVERYTHING := \
 	gles2 \
 
 ifeq ($(DETECTED_OS),Linux)
-	ifneq ($(NO_VULKAN), 1)
+	ifneq ($(NO_VULKAN),1)
 		EVERYTHING += vk10
 	endif
 endif
