@@ -39,6 +39,10 @@ endif
 
 ifeq ($(DETECTED_OS),Linux)
 
+	OBJ_EXT := .o
+	STATIC_EXT := .a
+	SHARED_EXT := .so
+
 	ifeq ($(RGFW_WAYLAND),1)
 
 		LIBS := -ldl -lEGL -lGL -lwayland-egl -lwayland-cursor -lwayland-client -lxkbcommon relative-pointer-unstable-v1-client-protocol.c xdg-decoration-unstable-v1.c xdg-shell.c
@@ -55,6 +59,10 @@ ifeq ($(DETECTED_OS),Linux)
 	endif
 
 else ifeq ($(DETECTED_OS),Darwin)
+
+	OBJ_EXT := .o
+	STATIC_EXT := .a
+	SHARED_EXT := .so
 
 	LIBS := -framework CoreVideo -framework Cocoa -framework OpenGL -framework IOKit
 
@@ -87,15 +95,20 @@ $(OUT)/%$(EXT): RGFW.h | $(OUT)
 	@mkdir -p $(dir $@)
 	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) examples/$(basename $(notdir $@))/$(basename $(notdir $@)).c $(LIBS) -o $@
 
-$(OUT)/RGFW.o: DEFAULT_CFLAGS += -x c -D RGFW_NO_API -D RGFW_EXPORT -D RGFW_IMPLEMENTATION
-$(OUT)/RGFW.o: RGFW.h | $(OUT)
-	$(CC) -c -o $@ -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $^
+$(OUT)/RGFW$(OBJ_EXT): DEFAULT_CFLAGS += -x c -D RGFW_NO_API -D RGFW_EXPORT -D RGFW_IMPLEMENTATION
+$(OUT)/RGFW$(OBJ_EXT): RGFW.h | $(OUT)
+	@echo $(OBJ_EXT) $(STATIC_EXT) $(SHARED_EXT)
+	$(CC) -c -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $^ -o $@
 
-$(OUT)/libRGFW.a: $(OUT)/RGFW.o | $(OUT)
+$(OUT)/libRGFW$(STATIC_EXT): $(OUT)/RGFW$(OBJ_EXT) | $(OUT)
+	@echo $(OBJ_EXT) $(STATIC_EXT) $(SHARED_EXT)
 	ar rcs $@ $^
+libRGFW$(STATIC_EXT): $(OUT)/libRGFW$(STATIC_EXT) | $(OUT)
 
-$(OUT)/libRGFW.so: $(OUT)/RGFW.o | $(OUT)
+$(OUT)/libRGFW$(SHARED_EXT): $(OUT)/RGFW$(OBJ_EXT) | $(OUT)
+	@echo $(OBJ_EXT) $(STATIC_EXT) $(SHARED_EXT)
 	$(CC) -shared -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) -o $@
+libRGFW$(SHARED_EXT): $(OUT)/libRGFW$(SHARED_EXT)
 
 $(OUT)/basic$(EXT):         LIBS += $(WASM_LINK_GL1)
 $(OUT)/buffer$(EXT):        LIBS += $(WASM_LINK_GL1)
@@ -122,7 +135,7 @@ $(OUT)/microui_demo$(EXT): examples/microui_demo/microui.c examples/microui_demo
 	$(CC) -Iexamples/microui $(DEFAULT_CFLAGS) $(CFLAGS) $(WASM_LINK_MICROUI) $^ $(LIBS) -o $@
 
 $(OUT)/metal$(EXT): LIBS += -framework Metal -framework QuartzCore
-$(OUT)/metal$(EXT): examples/metal/metal.m $(OUT)/RGFW.o
+$(OUT)/metal$(EXT): examples/metal/metal.m $(OUT)/RGFW$(OBJ_EXT)
 	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) -o $@
 
 $(OUT)/vk10$(EXT): examples/vk10/vk10.c
