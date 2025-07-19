@@ -14,16 +14,16 @@ ifneq (,$(filter $(CC),emcc em++))
 endif
 
 ifeq ($(CC),g++)
-	DEFAULT_CFLAGS += -x c -Wall -Werror -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
+	DEFAULT_CFLAGS += -x c -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
 	CPEEPEE := 1
 else ifeq ($(CC),clang++)
-	DEFAULT_CFLAGS += -x c -Wall -Werror -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
+	DEFAULT_CFLAGS += -x c -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
 	CPEEPEE := 1
 else ifeq ($(CC),em++)
 	DEFAULT_CFLAGS += -x c
 	CPEEPEE := 1
 else ifneq ($(CC),emcc)
-	DEFAULT_CFLAGS += -std=c99 -Werror -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wnested-externs -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
+	DEFAULT_CFLAGS += -std=c99 -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wnested-externs -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
 	CPEEPEE := 0
 endif
 
@@ -80,7 +80,7 @@ $(OUT):
 
 $(OUT)/%$(EXT): RGFW.h | $(OUT)
 	@mkdir -p $(dir $@)
-	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) $(LIBS) examples/$(basename $(notdir $@))/$(basename $(notdir $@)).c -o $@
+	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) examples/$(basename $(notdir $@))/$(basename $(notdir $@)).c $(LIBS) -o $@
 
 $(OUT)/RGFW.o: DEFAULT_CFLAGS += -x c -D RGFW_NO_API -D RGFW_EXPORT -D RGFW_IMPLEMENTATION
 $(OUT)/RGFW.o: RGFW.h | $(OUT)
@@ -90,7 +90,7 @@ $(OUT)/libRGFW.a: $(OUT)/RGFW.o | $(OUT)
 	ar rcs $@ $^
 
 $(OUT)/libRGFW.so: $(OUT)/RGFW.o | $(OUT)
-	$(CC) -shared -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $(LIBS) $^ -o $@
+	$(CC) -shared -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) -o $@
 
 $(OUT)/basic$(EXT):         LIBS += $(WASM_LINK_GL1)
 $(OUT)/buffer$(EXT):        LIBS += $(WASM_LINK_GL1)
@@ -113,18 +113,18 @@ $(OUT)/webgpu$(EXT):        LIBS := -s USE_WEBGPU=1
 $(OUT)/gears$(EXT):         LIBS += -lm $(WASM_LINK_GL1)
 $(OUT)/osmesa_demo$(EXT):   LIBS += -lm -lOSMesa $(WASM_LINK_OSMESA)
 
-$(OUT)/microui_demo$(EXT): examples/microui_demo/microui.c examples/microui_demo/microui_demo.c examples/microui_demo/renderer.c
-	$(CC) -Iexamples/microui $(DEFAULT_CFLAGS) $(CFLAGS) $(LIBS) $(WASM_LINK_MICROUI)
+$(OUT)/microui_demo$(EXT): examples/microui_demo/microui.c examples/microui_demo/microui_demo.c
+	$(CC) -Iexamples/microui $(DEFAULT_CFLAGS) $(CFLAGS) $(WASM_LINK_MICROUI) $^ $(LIBS) -o $@
 
 $(OUT)/metal$(EXT): LIBS += -framework Metal -framework QuartzCore
 $(OUT)/metal$(EXT): examples/metal/metal.m $(OUT)/RGFW.o
-	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) $(LIBS) $^ -o $@
+	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) -o $@
 
 $(OUT)/vk10$(EXT): examples/vk10/vk10.c
 	@mkdir -p $(OUT)/shaders
 	glslangValidator -V examples/vk10/shaders/vert.vert -o $(OUT)/shaders/vert.h --vn vert_code
 	glslangValidator -V examples/vk10/shaders/frag.frag -o $(OUT)/shaders/frag.h --vn frag_code
-	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) $(VULKAN_LIBS) -I$(OUT) $^ -o $@
+	$(CC) -I$(OUT) $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(VULKAN_LIBS) -o $@
 
 EVERYTHING := \
 	basic \
@@ -142,7 +142,9 @@ EVERYTHING := \
 	gles2 \
 
 ifeq ($(DETECTED_OS),Linux)
-	EVERYTHING += vk10
+	ifneq ($(NO_VULKAN), 1)
+		EVERYTHING += vk10
+	endif
 endif
 
 ifneq ($(NO_GLES),1)
