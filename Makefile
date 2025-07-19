@@ -22,7 +22,7 @@ else ifeq ($(CC),clang++)
 else ifeq ($(CC),em++)
 	DEFAULT_CFLAGS += -x c
 	CPEEPEE := 1
-else
+else ifneq ($(CC),emcc)
 	DEFAULT_CFLAGS += -std=c99 -Werror -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wnested-externs -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
 	CPEEPEE := 0
 endif
@@ -105,7 +105,6 @@ $(OUT)/icons$(EXT):         LIBS += -lm $(WASM_LINK_GL1)
 $(OUT)/gamepad$(EXT):       LIBS += -lm $(WASM_LINK_GL1)
 $(OUT)/silk$(EXT):          LIBS += -lm $(WASM_LINK_GL1)
 $(OUT)/camera$(EXT):        LIBS += -lm $(WASM_LINK_GL1)
-$(OUT)/microui_demo$(EXT):  LIBS += $(WASM_LINK_MICROUI)
 $(OUT)/gl33$(EXT):          LIBS += $(WASM_LINK_GL3)
 $(OUT)/portableGL$(EXT):    LIBS += -lm
 $(OUT)/gles2$(EXT):         LIBS += $(WASM_LINK_GL2)
@@ -113,6 +112,9 @@ $(OUT)/egl$(EXT):           LIBS += -lEGL
 $(OUT)/webgpu$(EXT):        LIBS := -s USE_WEBGPU=1
 $(OUT)/gears$(EXT):         LIBS += -lm $(WASM_LINK_GL1)
 $(OUT)/osmesa_demo$(EXT):   LIBS += -lm -lOSMesa $(WASM_LINK_OSMESA)
+
+$(OUT)/microui_demo$(EXT): examples/microui_demo/microui.c examples/microui_demo/microui_demo.c examples/microui_demo/renderer.c
+	$(CC) -Iexamples/microui $(DEFAULT_CFLAGS) $(CFLAGS) $(LIBS) $(WASM_LINK_MICROUI)
 
 $(OUT)/metal$(EXT): LIBS += -framework Metal -framework QuartzCore
 $(OUT)/metal$(EXT): examples/metal/metal.m $(OUT)/RGFW.o
