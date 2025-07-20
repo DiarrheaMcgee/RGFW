@@ -169,7 +169,7 @@ $(OUT)/microui_demo$(EXT): examples/microui_demo/microui.c examples/microui_demo
 
 $(OUT)/metal$(EXT): LIBS += -framework Metal -framework QuartzCore
 $(OUT)/metal$(EXT): examples/metal/metal.m $(OUT)/RGFW$(OBJ_EXT)
-	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) -o $@
+	$(CC) $(OUT)/RGFW$(OBJ_EXT) $(DEFAULT_CFLAGS) $(CFLAGS) examples/metal/metal.m $(LIBS) -o $@
 
 $(OUT)/vk10$(EXT): examples/vk10/vk10.c
 	@mkdir -p $(OUT)/shaders
