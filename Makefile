@@ -189,8 +189,7 @@ EVERYTHING := \
 	multi-window \
 	icons \
 	camera \
-	gl33 \
-	gles2
+	gl33
 
 ifeq ($(DETECTED_OS),Linux)
 	ifneq ($(NO_VULKAN),1)
