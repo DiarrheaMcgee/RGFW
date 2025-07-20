@@ -20,10 +20,6 @@ else
 	CPEEPEE := 0
 endif
 
-ifneq ($(CC),zig cc)
-	DEFAULT_CFLAGS += -D _WIN32_WINNT=0x0501
-endif
-
 ifeq ($(WAYLAND_ONLY), 1)
 	RGFW_WAYLAND := 1
 endif
@@ -92,6 +88,10 @@ else
 	DX11_LIBS := -static -lgdi32 -ldxgi -ld3d11 -luuid -ld3dcompiler
 	VULKAN_LIBS := -lgdi32 -I $(VULKAN_SDK)/Include -L $(VULKAN_SDK)/Lib -lvulkan-1
 	LIBS := -lopengl32 -static -lgdi32 -ggdb
+
+	ifneq ($(CC),zig cc)
+		DEFAULT_CFLAGS += -D _WIN32_WINNT=0x0501
+	endif
 
 endif
 
@@ -175,9 +175,9 @@ $(OUT)/osmesa_demo$(EXT):   LIBS += -lm -lOSMesa $(WASM_LINK_OSMESA)
 $(OUT)/microui_demo$(EXT): examples/microui_demo/microui.c examples/microui_demo/microui_demo.c
 	$(CC) -Iexamples/microui $(DEFAULT_CFLAGS) $(CFLAGS) $(WASM_LINK_MICROUI) $^ $(LIBS) -o $@
 
-$(OUT)/metal$(EXT): EXTRA_SRC := $(OUT)/RGFW$(OBJ_EXT) LIBS := -framework CoreVideo -framework Metal -framework Cocoa -framework IOKit -framework QuartzCore
+$(OUT)/metal$(EXT): LIBS := -framework CoreVideo -framework Metal -framework Cocoa -framework IOKit -framework QuartzCore
 $(OUT)/metal$(EXT): examples/metal/metal.m $(OUT)/RGFW$(OBJ_EXT)
-	gcc $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) -o $@
+	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) -o $@
 
 $(OUT)/vk10$(EXT): examples/vk10/vk10.c
 	@mkdir -p $(OUT)/shaders
