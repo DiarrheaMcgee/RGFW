@@ -38,6 +38,10 @@ ifneq ($(CC),zig cc)
 	DEFAULT_CFLAGS += -D _WIN32_WINNT=0x0501
 endif
 
+ifeq ($(WAYLAND_ONLY), 1)
+	RGFW_WAYLAND := 1
+endif
+
 ifeq ($(DETECTED_OS),Linux)
 
 	OBJ_EXT := .o
@@ -57,7 +61,8 @@ ifeq ($(DETECTED_OS),Linux)
 		LIBS := -ldl -lEGL -lGL -lwayland-egl -lwayland-cursor -lwayland-client -lxkbcommon
 		VULKAN_LIBS := -ldl -lEGL -lGL -lwayland-egl -lwayland-cursor -lwayland-client -lxkbcommon -lvulkan
 		DEFAULT_CFLAGS += -D RGFW_WAYLAND -I$(OUT)/xdg
-		
+		NO_VULKAN := 1
+
 		ifeq ($(WAYLAND_ONLY),1)
 			DEFAULT_CFLAGS += -D RGFW_NO_X11
 		else
@@ -65,8 +70,10 @@ ifeq ($(DETECTED_OS),Linux)
 		endif
 
 	else
+
 		LIBS := -lX11 -lXrandr -ldl -lGL
 		VULKAN_LIBS := -lX11 -lXrandr -ldl -lpthread -lvulkan
+
 	endif
 
 else ifeq ($(DETECTED_OS),Darwin)
@@ -183,7 +190,7 @@ EVERYTHING := \
 	icons \
 	camera \
 	gl33 \
-	gles2 \
+	gles2
 
 ifeq ($(DETECTED_OS),Linux)
 	ifneq ($(NO_VULKAN),1)
