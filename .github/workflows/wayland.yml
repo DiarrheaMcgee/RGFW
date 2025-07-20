@@ -35,7 +35,7 @@ jobs:
         - bits: 64
           ARCH: "x86_64"
           ARCH_NAME: "amd64"
-          COMPILER_PATH: "/user/bin"
+          COMPILER_PATH: "/usr/bin"
           
     env:
       RELEASE_NAME: RGFW-dev_linux_${{ matrix.ARCH_NAME }}
@@ -58,7 +58,7 @@ jobs:
       run: | 
         sudo apt-get update -qq
         sudo apt-get install gcc-multilib
-        sudo apt-get install -y --no-install-recommends libx11-dev mesa-common-dev libglx-dev libxcursor-dev mesa-vulkan-drivers libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxext-dev libxfixes-dev libwayland-dev libxkbcommon-dev wayland-protocols libgles2-mesa-dev libosmesa6-dev
+        sudo apt-get install -y --no-install-recommends libx11-dev mesa-common-dev libglx-dev libxcursor-dev mesa-vulkan-drivers libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxext-dev libxfixes-dev libwayland-dev libxkbcommon-dev wayland-protocols libgles2-mesa-dev libosmesa6-dev libarchive-tools
         mkdir build
         cd build
         mkdir ${{ env.RELEASE_NAME }}
@@ -75,5 +75,5 @@ jobs:
       run: |
         make libRGFW.a RGFW_WAYLAND=1
         make libRGFW.so RGFW_WAYLAND=1
-        cp -v ./libRGFW.so ./build/${{ env.RELEASE_NAME }}/lib
+        cp -v ./out/libRGFW.so ./build/${{ env.RELEASE_NAME }}/lib
       if: matrix.bits == 64

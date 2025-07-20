@@ -36,7 +36,7 @@ jobs:
         - bits: 64
           ARCH: "x86_64"
           ARCH_NAME: "amd64"
-          COMPILER_PATH: "/user/bin"
+          COMPILER_PATH: "/usr/bin"
          
     env:
       RELEASE_NAME: RGFW-dev_linux_${{ matrix.ARCH_NAME }}
@@ -58,7 +58,7 @@ jobs:
       run: | 
         sudo apt-get update -qq
         sudo apt-get install gcc-multilib
-        sudo apt-get install -y --no-install-recommends libx11-dev mesa-common-dev libglx-dev libxcursor-dev mesa-vulkan-drivers libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxext-dev libxfixes-dev libwayland-dev libxkbcommon-dev libgles2-mesa-dev libosmesa6-dev
+        sudo apt-get install -y --no-install-recommends libx11-dev mesa-common-dev libglx-dev libxcursor-dev mesa-vulkan-drivers libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxext-dev libxfixes-dev libwayland-dev libxkbcommon-dev libgles2-mesa-dev libosmesa6-dev libarchive-tools
         mkdir build
         cd build
         mkdir ${{ env.RELEASE_NAME }}
@@ -82,17 +82,17 @@ jobs:
       run: |
         make libRGFW.a
         make libRGFW.so
-        cp -v ./libRGFW.so ./build/${{ env.RELEASE_NAME }}/lib
       if: matrix.bits == 64
     
     - name: Generate Artifacts
       run: |
         cp -v ./RGFW.h ./build/${{ env.RELEASE_NAME }}/include
-        cp -v ./libRGFW.a ./build/${{ env.RELEASE_NAME }}/lib
+        cp -v ./out/libRGFW.a ./build/${{ env.RELEASE_NAME }}/lib
+        cp -v ./out/libRGFW.so ./build/${{ env.RELEASE_NAME }}/lib
         cp -v ./README.md ./build/${{ env.RELEASE_NAME }}/README.md
         cp -v ./LICENSE ./build/${{ env.RELEASE_NAME }}/LICENSE
         cd build
-        tar -czvf ${{ env.RELEASE_NAME }}.tar.gz ${{ env.RELEASE_NAME }}
+        bsdtar -czvf ${{ env.RELEASE_NAME }}.tar.gz ${{ env.RELEASE_NAME }}
         
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
