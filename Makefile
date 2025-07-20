@@ -62,7 +62,7 @@ else ifeq ($(DETECTED_OS),Darwin)
 
 	OBJ_EXT := .o
 	STATIC_EXT := .a
-	SHARED_EXT := .so
+	SHARED_EXT := .dylib
 
 	LIBS := -framework CoreVideo -framework Cocoa -framework OpenGL -framework IOKit
 
