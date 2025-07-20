@@ -60,6 +60,8 @@ ifeq ($(DETECTED_OS),Linux)
 		
 		ifeq ($(WAYLAND_ONLY),1)
 			DEFAULT_CFLAGS += -D RGFW_NO_X11
+		else
+			LIBS += -lX11 -lXrandr
 		endif
 
 	else
@@ -103,7 +105,7 @@ $(OUT):
 	mkdir -p $(OUT)
 
 $(OUT)/xdg: | $(OUT)
-	mkdir -p $(OUT)/xdg
+	mkdir $(OUT)/xdg
 
 $(OUT)/xdg/xdg-shell.h: | $(OUT)/xdg
 	wayland-scanner client-header /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml $(OUT)/xdg/xdg-shell.h
@@ -116,7 +118,7 @@ $(OUT)/xdg/xdg-decoration-unstable-v1.c: | $(OUT)/xdg
 $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.h: | $(OUT)/xdg
 	wayland-scanner client-header /usr/share/wayland-protocols/unstable/relative-pointer/relative-pointer-unstable-v1.xml $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.h
 $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.c: | $(OUT)/xdg
-	wayland-scanner client-header /usr/share/wayland-protocols/unstable/relative-pointer/relative-pointer-unstable-v1.xml $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.c
+	wayland-scanner client-code /usr/share/wayland-protocols/unstable/relative-pointer/relative-pointer-unstable-v1.xml $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.c
 
 $(OUT)/%$(EXT): $(SRC) RGFW.h | $(OUT)
 	@mkdir -p $(dir $@)
