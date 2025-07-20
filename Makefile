@@ -8,7 +8,7 @@ NO_GLES ?= 1
 NO_OSMESA ?= 1
 NO_EGL ?= 1
 
-DETECTED_OS = $(shell uname 2>/dev/null || echo retarded)
+DETECTED_OS = $(shell uname 2>/dev/null || echo unknown)
 
 ifneq (,$(filter $(CC),emcc em++))
 	DETECTED_OS := web
@@ -84,7 +84,7 @@ else ifeq ($(DETECTED_OS),web)
 	WASM_LINK_MICROUI := -s USE_WEBGL2 $(WASM_LINK_GL1)
 	LIBS := -s WASM=1 -s ASYNCIFY -s GL_SUPPORT_EXPLICIT_SWAP_CONTROL=1 -s EXPORTED_RUNTIME_METHODS="['stringToNewUTF8']"
 
-else ifeq ($(DETECTED_OS),retarded)
+else
 
 	EXT = .exe
 	STATIC_EXT = .lib
