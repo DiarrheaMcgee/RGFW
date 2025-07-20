@@ -88,6 +88,15 @@ else ifeq ($(DETECTED_OS),web)
 	WASM_LINK_MICROUI := -s USE_WEBGL2 $(WASM_LINK_GL1)
 	LIBS := -s WASM=1 -s ASYNCIFY -s GL_SUPPORT_EXPLICIT_SWAP_CONTROL=1 -s EXPORTED_RUNTIME_METHODS="['stringToNewUTF8']"
 
+else ifneq (,$(filter $(DETECTED_OS),windows Windows_NT))
+
+	EXT = .exe
+	STATIC_EXT = .lib
+	SHARED_EXT = .dll
+	DX11_LIBS := -static -lgdi32 -ldxgi -ld3d11 -luuid -ld3dcompiler
+	VULKAN_LIBS := -lgdi32 -I $(VULKAN_SDK)/Include -L $(VULKAN_SDK)/Lib -lvulkan-1
+	LIBS := -lopengl32 -static -lgdi32 -ggdb
+
 endif
 
 ifneq ($(DETECTED_OS),Linux)
