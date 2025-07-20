@@ -118,7 +118,7 @@ $(OUT)/xdg/xdg-decoration-unstable-v1.c: | $(OUT)/xdg
 $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.h: | $(OUT)/xdg
 	wayland-scanner client-header /usr/share/wayland-protocols/unstable/relative-pointer/relative-pointer-unstable-v1.xml $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.h
 $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.c: | $(OUT)/xdg
-	wayland-scanner client-code /usr/share/wayland-protocols/unstable/relative-pointer/relative-pointer-unstable-v1.xml $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.c
+	wayland-scanner client-header /usr/share/wayland-protocols/unstable/relative-pointer/relative-pointer-unstable-v1.xml $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.c
 
 $(OUT)/%$(EXT): $(SRC) RGFW.h | $(OUT)
 	@mkdir -p $(dir $@)
