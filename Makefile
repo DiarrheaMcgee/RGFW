@@ -1,4 +1,5 @@
 DEFAULT_CFLAGS := -I./
+OUT            ?= out
 CC             ?= cc
 AR             ?= ar
 .DEFAULT_GOAL   = all
@@ -45,9 +46,17 @@ ifeq ($(DETECTED_OS),Linux)
 
 	ifeq ($(RGFW_WAYLAND),1)
 
-		LIBS := -ldl -lEGL -lGL -lwayland-egl -lwayland-cursor -lwayland-client -lxkbcommon relative-pointer-unstable-v1-client-protocol.c xdg-decoration-unstable-v1.c xdg-shell.c
-		VULKAN_LIBS := -ldl -lEGL -lGL -lwayland-egl -lwayland-cursor -lwayland-client -lxkbcommon -lvulkan relative-pointer-unstable-v1-client-protocol.c xdg-decoration-unstable-v1.c xdg-shell.c
-		DEFAULT_CFLAGS += -D RGFW_WAYLAND
+		SRC := \
+		       $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.c \
+		       $(OUT)/xdg/xdg-decoration-unstable-v1.c \
+		       $(OUT)/xdg/xdg-shell.c \
+		       $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.h \
+		       $(OUT)/xdg/xdg-decoration-unstable-v1.h \
+		       $(OUT)/xdg/xdg-shell.h
+
+		LIBS := -ldl -lEGL -lGL -lwayland-egl -lwayland-cursor -lwayland-client -lxkbcommon
+		VULKAN_LIBS := -ldl -lEGL -lGL -lwayland-egl -lwayland-cursor -lwayland-client -lxkbcommon -lvulkan
+		DEFAULT_CFLAGS += -D RGFW_WAYLAND -I$(OUT)/xdg
 		
 		ifeq ($(WAYLAND_ONLY),1)
 			DEFAULT_CFLAGS += -D RGFW_NO_X11
@@ -82,7 +91,9 @@ else ifeq ($(DETECTED_OS),web)
 
 endif
 
-OUT ?= out
+ifneq ($(DETECTED_OS),Linux)
+	RGFW_WAYLAND := 0
+endif
 
 .PHONY: clean
 clean:
@@ -91,7 +102,23 @@ clean:
 $(OUT):
 	mkdir -p $(OUT)
 
-$(OUT)/%$(EXT): RGFW.h | $(OUT)
+$(OUT)/xdg: | $(OUT)
+	mkdir -p $(OUT)/xdg
+
+$(OUT)/xdg/xdg-shell.h: | $(OUT)/xdg
+	wayland-scanner client-header /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml $(OUT)/xdg/xdg-shell.h
+$(OUT)/xdg/xdg-shell.c: | $(OUT)/xdg
+	wayland-scanner public-code /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml $(OUT)/xdg/xdg-shell.c
+$(OUT)/xdg/xdg-decoration-unstable-v1.h: | $(OUT)/xdg
+	wayland-scanner client-header /usr/share/wayland-protocols/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml $(OUT)/xdg/xdg-decoration-unstable-v1.h
+$(OUT)/xdg/xdg-decoration-unstable-v1.c: | $(OUT)/xdg
+	wayland-scanner public-code /usr/share/wayland-protocols/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml $(OUT)/xdg/xdg-decoration-unstable-v1.c
+$(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.h: | $(OUT)/xdg
+	wayland-scanner client-header /usr/share/wayland-protocols/unstable/relative-pointer/relative-pointer-unstable-v1.xml $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.h
+$(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.c: | $(OUT)/xdg
+	wayland-scanner client-header /usr/share/wayland-protocols/unstable/relative-pointer/relative-pointer-unstable-v1.xml $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.c
+
+$(OUT)/%$(EXT): $(SRC) RGFW.h | $(OUT)
 	@mkdir -p $(dir $@)
 	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) examples/$(basename $(notdir $@))/$(basename $(notdir $@)).c $(LIBS) -o $@
 
