@@ -14,24 +14,14 @@ ifneq (,$(filter $(CC),emcc em++))
 	DETECTED_OS := web
 endif
 
-ifeq ($(CC),g++)
-	DEFAULT_CFLAGS += -x c -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
-	CPEEPEE := 1
-else ifeq ($(CC),clang++)
-	DEFAULT_CFLAGS += -x c -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
-	CPEEPEE := 1
-else ifeq ($(CC),em++)
-	DEFAULT_CFLAGS += -x c
+ifneq (,$(filter $(CC),g++ clang++ em++))
 	CPEEPEE := 1
 else
-	ifneq ($(CC),emcc)
-		DEFAULT_CFLAGS += -std=c99 -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wnested-externs -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
-	endif
 	CPEEPEE := 0
 endif
 
-ifeq ($(CPEEPEE),1)
-	NO_VULKAN := 1
+ifneq ($(CC),emcc)
+	DEFAULT_CFLAGS += -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wnested-externs -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
 endif
 
 ifneq ($(CC),zig cc)
@@ -104,6 +94,15 @@ ifneq ($(DETECTED_OS),Linux)
 	RGFW_WAYLAND := 0
 endif
 
+ifeq ($(CPEEPEE),1)
+	ifneq ($(DETECTED_OS),Darwin)
+		ifeq ($(CPEEPEE),1)
+			DEFAULT_CFLAGS += -x c -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
+		endif
+	endif
+	NO_VULKAN := 1
+endif
+
 .PHONY: clean
 clean:
 	-rm -rf $(OUT)
@@ -167,9 +166,9 @@ $(OUT)/osmesa_demo$(EXT):   LIBS += -lm -lOSMesa $(WASM_LINK_OSMESA)
 $(OUT)/microui_demo$(EXT): examples/microui_demo/microui.c examples/microui_demo/microui_demo.c
 	$(CC) -Iexamples/microui $(DEFAULT_CFLAGS) $(CFLAGS) $(WASM_LINK_MICROUI) $^ $(LIBS) -o $@
 
-$(OUT)/metal$(EXT): LIBS += -framework Metal -framework QuartzCore
-$(OUT)/metal$(EXT): examples/metal/metal.m $(OUT)/RGFW$(OBJ_EXT)
-	$(CC) $(OUT)/RGFW$(OBJ_EXT) $(DEFAULT_CFLAGS) $(CFLAGS) examples/metal/metal.m $(LIBS) -o $@
+$(OUT)/metal$(EXT): EXTRA_SRC := $(OUT)/RGFW$(OBJ_EXT) LIBS += -framework Metal -framework QuartzCore
+$(OUT)/metal$(EXT): examples/metal/metal.m
+	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) -o $@
 
 $(OUT)/vk10$(EXT): examples/vk10/vk10.c
 	@mkdir -p $(OUT)/shaders
