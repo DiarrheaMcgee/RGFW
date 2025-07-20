@@ -8,7 +8,7 @@ NO_GLES ?= 1
 NO_OSMESA ?= 1
 NO_EGL ?= 1
 
-DETECTED_OS = $(shell uname 2>/dev/null || echo Unknown)
+DETECTED_OS = $(shell uname 2>/dev/null || echo retarded)
 
 ifneq (,$(filter $(CC),emcc em++))
 	DETECTED_OS := web
@@ -18,10 +18,6 @@ ifneq (,$(filter $(CC),g++ clang++ em++))
 	CPEEPEE := 1
 else
 	CPEEPEE := 0
-endif
-
-ifneq ($(CC),emcc)
-	DEFAULT_CFLAGS += -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wnested-externs -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
 endif
 
 ifneq ($(CC),zig cc)
@@ -88,7 +84,7 @@ else ifeq ($(DETECTED_OS),web)
 	WASM_LINK_MICROUI := -s USE_WEBGL2 $(WASM_LINK_GL1)
 	LIBS := -s WASM=1 -s ASYNCIFY -s GL_SUPPORT_EXPLICIT_SWAP_CONTROL=1 -s EXPORTED_RUNTIME_METHODS="['stringToNewUTF8']"
 
-else ifneq (,$(filter $(DETECTED_OS),windows Windows_NT))
+else ifeq ($(DETECTED_OS),retarded)
 
 	EXT = .exe
 	STATIC_EXT = .lib
@@ -107,8 +103,12 @@ ifeq ($(CPEEPEE),1)
 	ifneq ($(DETECTED_OS),Darwin)
 		ifeq ($(CPEEPEE),1)
 			DEFAULT_CFLAGS += -x c -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
+		else ifneq ($(CC),emcc)
+			DEFAULT_CFLAGS += -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wnested-externs -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
 		endif
-	endif
+
+endif
+
 	NO_VULKAN := 1
 endif
 
