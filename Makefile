@@ -177,7 +177,7 @@ $(OUT)/microui_demo$(EXT): examples/microui_demo/microui.c examples/microui_demo
 
 $(OUT)/metal$(EXT): EXTRA_SRC := $(OUT)/RGFW$(OBJ_EXT) LIBS := -framework CoreVideo -framework Metal -framework Cocoa -framework IOKit -framework QuartzCore
 $(OUT)/metal$(EXT): examples/metal/metal.m $(OUT)/RGFW$(OBJ_EXT)
-	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) -o $@
+	gcc $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) -o $@
 
 $(OUT)/vk10$(EXT): examples/vk10/vk10.c
 	@mkdir -p $(OUT)/shaders
