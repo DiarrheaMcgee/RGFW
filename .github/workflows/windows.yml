@@ -83,7 +83,7 @@ jobs:
 
     - name: test Zig
       run: |
-        make CC="zig cc" NO_VULKAN=1 OBJ_FILE=.obj
+        make CC="zig cc" NO_VULKAN=1
       if: matrix.bits == 64 && matrix.compiler == 'zig'
 
     # Setup MSBuild.exe path if required
@@ -104,10 +104,10 @@ jobs:
       run: |
         windres.exe --version
         make CC=cl
-        rm -f RGFW.o 
-        make libRGFW.a CC=cl
+        make libRGFW.lib CC=cl
         make libRGFW.dll CC=cl
-        copy /Y .\libRGFW.dll .\build\${{ env.RELEASE_NAME }}\lib
+        copy /Y .\out\libRGFW.dll .\build\${{ env.RELEASE_NAME }}\lib
+        copy /Y .\out\libRGFW.lib .\build\${{ env.RELEASE_NAME }}\lib
       shell: cmd
       if: |
         matrix.compiler == 'msvc16' &&
@@ -118,10 +118,10 @@ jobs:
         ${{ matrix.ARCH }}-w64-mingw32-gcc.exe --version
         windres.exe --version
         dir C:\msys64\mingw64\bin
-        rm -f RGFW.o 
-        make libRGFW.a
+        make libRGFW.lib
         make libRGFW.dll
-        copy /Y .\libRGFW.dll .\build\${{ env.RELEASE_NAME }}\lib
+        copy /Y .\out\libRGFW.dll .\build\${{ env.RELEASE_NAME }}\lib
+        copy /Y .\out\libRGFW.lib .\build\${{ env.RELEASE_NAME }}\lib
       shell: cmd
       if: |
         matrix.compiler == 'mingw-w64' &&
