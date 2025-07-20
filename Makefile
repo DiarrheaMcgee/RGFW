@@ -46,7 +46,7 @@ ifeq ($(DETECTED_OS),Linux)
 
 	ifeq ($(RGFW_WAYLAND),1)
 
-		SRC := \
+		EXTRA_SRC := \
 		       $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.c \
 		       $(OUT)/xdg/xdg-decoration-unstable-v1.c \
 		       $(OUT)/xdg/xdg-shell.c \
@@ -120,9 +120,9 @@ $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.h: | $(OUT)/xdg
 $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.c: | $(OUT)/xdg
 	wayland-scanner client-header /usr/share/wayland-protocols/unstable/relative-pointer/relative-pointer-unstable-v1.xml $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.c
 
-$(OUT)/%$(EXT): $(SRC) RGFW.h | $(OUT)
+$(OUT)/%$(EXT): $(EXTRA_SRC) RGFW.h | $(OUT)
 	@mkdir -p $(dir $@)
-	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) examples/$(basename $(notdir $@))/$(basename $(notdir $@)).c $(LIBS) -o $@
+	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) examples/$(basename $(notdir $@))/$(basename $(notdir $@)).c $(EXTRA_SRC) $(LIBS) -o $@
 
 $(OUT)/RGFW$(OBJ_EXT): DEFAULT_CFLAGS += -x c -D RGFW_NO_API -D RGFW_EXPORT -D RGFW_IMPLEMENTATION
 $(OUT)/RGFW$(OBJ_EXT): RGFW.h | $(OUT)
