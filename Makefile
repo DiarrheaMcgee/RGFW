@@ -137,7 +137,7 @@ $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.c: | $(OUT)/xdg
 
 $(OUT)/%$(EXT): $(EXTRA_SRC) RGFW.h | $(OUT)
 	@mkdir -p $(dir $@)
-	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) examples/$(basename $(notdir $@))/$(basename $(notdir $@)).c $(EXTRA_SRC) $(LIBS) -o $@
+	$(CC) $(DEFAULT_CFLAGS) examples/$(basename $(notdir $@))/$(basename $(notdir $@)).c $(EXTRA_SRC) $(CFLAGS) $(LIBS) -o $@
 
 $(OUT)/RGFW$(OBJ_EXT): DEFAULT_CFLAGS += -x c -D RGFW_NO_API -D RGFW_EXPORT -D RGFW_IMPLEMENTATION
 $(OUT)/RGFW$(OBJ_EXT): RGFW.h | $(OUT)
