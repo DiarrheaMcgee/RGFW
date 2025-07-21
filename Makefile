@@ -1,5 +1,6 @@
 DEFAULT_CFLAGS := -I./
 OUT            ?= out
+CC             ?= gcc
 AR             ?= ar
 .DEFAULT_GOAL   = all
 
@@ -91,8 +92,6 @@ else
 	ifneq ($(CC),zig cc)
 		DEFAULT_CFLAGS += -D _WIN32_WINNT=0x0501
 	endif
-
-	CC ?= gcc
 
 endif
 
