@@ -1,6 +1,5 @@
 DEFAULT_CFLAGS := -I./
 OUT            ?= out
-CC             ?= cc
 AR             ?= ar
 .DEFAULT_GOAL   = all
 
