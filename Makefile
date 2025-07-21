@@ -92,6 +92,8 @@ else
 		DEFAULT_CFLAGS += -D _WIN32_WINNT=0x0501
 	endif
 
+	CC ?= gcc
+
 endif
 
 ifneq ($(DETECTED_OS),Linux)
