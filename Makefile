@@ -20,10 +20,6 @@ else
 	CPEEPEE := 0
 endif
 
-ifneq ($(CC),zig cc)
-	DEFAULT_CFLAGS += -D _WIN32_WINNT=0x0501
-endif
-
 ifeq ($(WAYLAND_ONLY), 1)
 	RGFW_WAYLAND := 1
 endif
@@ -93,6 +89,10 @@ else
 	VULKAN_LIBS := -lgdi32 -I $(VULKAN_SDK)/Include -L $(VULKAN_SDK)/Lib -lvulkan-1
 	LIBS := -lopengl32 -static -lgdi32 -ggdb
 
+	ifneq ($(CC),zig cc)
+		DEFAULT_CFLAGS += -D _WIN32_WINNT=0x0501
+	endif
+
 endif
 
 ifneq ($(DETECTED_OS),Linux)
@@ -137,7 +137,7 @@ $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.c: | $(OUT)/xdg
 
 $(OUT)/%$(EXT): $(EXTRA_SRC) RGFW.h | $(OUT)
 	@mkdir -p $(dir $@)
-	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) examples/$(basename $(notdir $@))/$(basename $(notdir $@)).c $(EXTRA_SRC) $(LIBS) -o $@
+	$(CC) $(DEFAULT_CFLAGS) examples/$(basename $(notdir $@))/$(basename $(notdir $@)).c $(EXTRA_SRC) $(CFLAGS) $(LIBS) -o $@
 
 $(OUT)/RGFW$(OBJ_EXT): DEFAULT_CFLAGS += -x c -D RGFW_NO_API -D RGFW_EXPORT -D RGFW_IMPLEMENTATION
 $(OUT)/RGFW$(OBJ_EXT): RGFW.h | $(OUT)
@@ -175,8 +175,8 @@ $(OUT)/osmesa_demo$(EXT):   LIBS += -lm -lOSMesa $(WASM_LINK_OSMESA)
 $(OUT)/microui_demo$(EXT): examples/microui_demo/microui.c examples/microui_demo/microui_demo.c
 	$(CC) -Iexamples/microui $(DEFAULT_CFLAGS) $(CFLAGS) $(WASM_LINK_MICROUI) $^ $(LIBS) -o $@
 
-$(OUT)/metal$(EXT): EXTRA_SRC := $(OUT)/RGFW$(OBJ_EXT) LIBS += -framework Metal -framework QuartzCore
-$(OUT)/metal$(EXT): examples/metal/metal.m
+$(OUT)/metal$(EXT): LIBS := -framework CoreVideo -framework Metal -framework Cocoa -framework IOKit -framework QuartzCore
+$(OUT)/metal$(EXT): examples/metal/metal.m $(OUT)/RGFW$(OBJ_EXT)
 	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) -o $@
 
 $(OUT)/vk10$(EXT): examples/vk10/vk10.c

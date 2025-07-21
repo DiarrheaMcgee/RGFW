@@ -67,19 +67,19 @@ jobs:
         # Build RGFW x86_64 static
         make libRGFW.a CFLAGS="-target x86_64-apple-macos10.12 -DGL_SILENCE_DEPRECATION"
         mv out/libRGFW.a /tmp/libRGFW_x86_64.a
-        rm -f RGFW.o
+        make clean
         
         # Build RGFW arm64 static
         make libRGFW.a CFLAGS="-target arm64-apple-macos11 -DGL_SILENCE_DEPRECATION"
         mv out/libRGFW.a /tmp/libRGFW_arm64.a
-        rm -f RGFW.o
+        make clean
         
         # Join x86_64 and arm64 static
         lipo -create -output build/${{ env.RELEASE_NAME }}/lib/libRGFW.a /tmp/libRGFW_x86_64.a /tmp/libRGFW_arm64.a
         
         # Build RGFW x86_64 dynamic
         make libRGFW.dylib CFLAGS="-target x86_64-apple-macos10.12 -DGL_SILENCE_DEPRECATION"
-        mv libRGFW.dylib /tmp/libRGFW_x86_64.dylib
+        mv out/libRGFW.dylib /tmp/libRGFW_x86_64.dylib
         rm -f RGFW.o
         
         # Build RGFW arm64 dynamic
