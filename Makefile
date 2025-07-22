@@ -157,7 +157,7 @@ $(OUT)/%$(EXT): $(EXTRA_SRC) RGFW.h | $(OUT)
 ifeq ($(CC),cl)
 	$(CC) $(DEFAULT_CFLAGS) examples$(DIR)$(basename $(notdir $@))$(DIR)$(basename $(notdir $@)).c $(EXTRA_SRC) $(CFLAGS) /Fe$(subst /,$(DIR),$@) $(LIBS)
 else
-	$(CC) $(DEFAULT_CFLAGS) examples/$(basename $(notdir $@))/$(basename $(notdir $@)).c $(EXTRA_SRC) $(CFLAGS) $(LIBS) -o $@
+	$(CC) $(DEFAULT_CFLAGS) examples/$(basename $(notdir $@))/$(basename $(notdir $@)).c $(EXTRA_SRC) $(CFLAGS) -o $@ $(LIBS) $(CUSTOM_LIBS)
 endif
 
 $(OUT)/RGFW$(OBJ_EXT): RGFW.h | $(OUT)
@@ -175,30 +175,30 @@ $(OUT)/libRGFW$(SHARED_EXT): $(OUT)/RGFW$(OBJ_EXT) | $(OUT)
 ifeq ($(CC), cl)
 	link /dll /out:$(subst /,$(DIR),$@) $(subst /,$(DIR),$^)
 else
-	$(CC) -shared -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) -o $@
+	$(CC) -shared -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $^ -o $@ $(LIBS) $(CUSTOM_LIBS)
 endif
 libRGFW$(SHARED_EXT): $(OUT)/libRGFW$(SHARED_EXT)
 
-$(OUT)/basic$(EXT):         LIBS += $(WASM_LINK_GL1)
-$(OUT)/buffer$(EXT):        LIBS += $(WASM_LINK_GL1)
-$(OUT)/events$(EXT):        LIBS += $(WASM_LINK_GL1)
-$(OUT)/callbacks$(EXT):     LIBS += $(WASM_LINK_GL1)
-$(OUT)/flags$(EXT):         LIBS += $(WASM_LINK_GL1)
-$(OUT)/monitor$(EXT):       LIBS += $(WASM_LINK_GL1)
-$(OUT)/gl33_ctx$(EXT):      LIBS += $(WASM_LINK_GL1)
-$(OUT)/smooth-resize$(EXT): LIBS += $(WASM_LINK_GL1)
-$(OUT)/multi-window$(EXT):  LIBS += $(WASM_LINK_GL1)
-$(OUT)/icons$(EXT):         LIBS += -lm $(WASM_LINK_GL1)
-$(OUT)/gamepad$(EXT):       LIBS += -lm $(WASM_LINK_GL1)
-$(OUT)/silk$(EXT):          LIBS += -lm $(WASM_LINK_GL1)
-$(OUT)/camera$(EXT):        LIBS += -lm $(WASM_LINK_GL1)
-$(OUT)/gl33$(EXT):          LIBS += $(WASM_LINK_GL3)
-$(OUT)/portableGL$(EXT):    LIBS += -lm
-$(OUT)/gles2$(EXT):         LIBS += $(WASM_LINK_GL2)
-$(OUT)/egl$(EXT):           LIBS += -lEGL
-$(OUT)/webgpu$(EXT):        LIBS := -s USE_WEBGPU=1
-$(OUT)/gears$(EXT):         LIBS += -lm $(WASM_LINK_GL1)
-$(OUT)/osmesa_demo$(EXT):   LIBS += -lm -lOSMesa $(WASM_LINK_OSMESA)
+$(OUT)/basic$(EXT):         CUSTOM_LIBS := $(WASM_LINK_GL1)
+$(OUT)/buffer$(EXT):        CUSTOM_LIBS := $(WASM_LINK_GL1)
+$(OUT)/events$(EXT):        CUSTOM_LIBS := $(WASM_LINK_GL1)
+$(OUT)/callbacks$(EXT):     CUSTOM_LIBS := $(WASM_LINK_GL1)
+$(OUT)/flags$(EXT):         CUSTOM_LIBS := $(WASM_LINK_GL1)
+$(OUT)/monitor$(EXT):       CUSTOM_LIBS := $(WASM_LINK_GL1)
+$(OUT)/gl33_ctx$(EXT):      CUSTOM_LIBS := $(WASM_LINK_GL1)
+$(OUT)/smooth-resize$(EXT): CUSTOM_LIBS := $(WASM_LINK_GL1)
+$(OUT)/multi-window$(EXT):  CUSTOM_LIBS := $(WASM_LINK_GL1)
+$(OUT)/icons$(EXT):         CUSTOM_LIBS := -lm $(WASM_LINK_GL1)
+$(OUT)/gamepad$(EXT):       CUSTOM_LIBS := -lm $(WASM_LINK_GL1)
+$(OUT)/silk$(EXT):          CUSTOM_LIBS := -lm $(WASM_LINK_GL1)
+$(OUT)/camera$(EXT):        CUSTOM_LIBS := -lm $(WASM_LINK_GL1)
+$(OUT)/gl33$(EXT):          CUSTOM_LIBS := $(WASM_LINK_GL3)
+$(OUT)/portableGL$(EXT):    CUSTOM_LIBS := -lm
+$(OUT)/gles2$(EXT):         CUSTOM_LIBS := $(WASM_LINK_GL2)
+$(OUT)/egl$(EXT):           CUSTOM_LIBS := -lEGL
+$(OUT)/webgpu$(EXT):        CUSTOM_LIBS := -s USE_WEBGPU=1
+$(OUT)/gears$(EXT):         CUSTOM_LIBS := -lm $(WASM_LINK_GL1)
+$(OUT)/osmesa_demo$(EXT):   CUSTOM_LIBS := -lm -lOSMesa $(WASM_LINK_OSMESA)
 
 $(OUT)/microui_demo$(EXT): examples/microui_demo/microui.c examples/microui_demo/microui_demo.c
 	$(CC) -Iexamples/microui $(DEFAULT_CFLAGS) $(CFLAGS) $(WASM_LINK_MICROUI) $^ $(LIBS) -o $@
@@ -208,10 +208,14 @@ $(OUT)/metal$(EXT): examples/metal/metal.m $(OUT)/RGFW$(OBJ_EXT)
 	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) -o $@
 
 $(OUT)/vk10$(EXT): examples/vk10/vk10.c
+ifeq ($(CC), cl)
+	@echo vulkan doesnt work yet
+else
 	@mkdir -p $(OUT)/shaders
 	glslangValidator -V examples/vk10/shaders/vert.vert -o $(OUT)/shaders/vert.h --vn vert_code
 	glslangValidator -V examples/vk10/shaders/frag.frag -o $(OUT)/shaders/frag.h --vn frag_code
 	$(CC) -I$(OUT) $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(VULKAN_LIBS) -o $@
+endif
 
 EVERYTHING := \
 	basic \
@@ -245,6 +249,10 @@ ifneq ($(NO_EGL),1)
 	EVERYTHING += egl
 endif
 
+ifneq (,$(filter $(CC),gcc g++))
+	EVERYTHING += gears
+endif
+
 ifeq ($(CPEEPEE),0)
 	EVERYTHING += silk
 endif
@@ -256,9 +264,7 @@ endif
 ifeq ($(DETECTED_OS),web)
 	EVERYTHING += webgpu microui_demo
 else
-	EVERYTHING += \
-		      portableGL \
-		      gears
+	EVERYTHING += portableGL
 endif
 
 $(EVERYTHING): %: $(OUT)/%$(EXT)
