@@ -162,7 +162,7 @@ endif
 
 $(OUT)/RGFW$(OBJ_EXT): RGFW.h | $(OUT)
 ifeq ($(CC),cl)
-	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) /TC $(subst /,$(DIR),$^) /Fo$(subst /,$(DIR),$@)
+	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) /dll /TC $(subst /,$(DIR),$^) /Fo$(subst /,$(DIR),$@)
 else
 	$(CC) -x c -c -D RGFW_NO_API -D RGFW_EXPORT -D RGFW_IMPLEMENTATION -c -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $^ -o $@
 endif
