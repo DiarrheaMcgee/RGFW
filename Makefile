@@ -5,6 +5,7 @@ AR             ?= ar
 NO_GLES ?= 1
 NO_OSMESA ?= 1
 NO_EGL ?= 1
+DIR := /
 
 DETECTED_OS = $(shell uname 2>/dev/null || echo unknown)
 
@@ -94,6 +95,7 @@ else
 		VULKAN_LIBS := gdi32.lib /I $(VULKAN_SDK)/Include /LIBPATH:$(VULKAN_SDK)/Lib -lvulkan-1
 		LIBS := opengl32.lib lgdi32.lib
 		DEFAULT_CFLAGS := /I./ -D _WIN32_WINNT=0x0501
+		DIR := \\
 	else
 		DEFAULT_CFLAGS := -I./
 		DX11_LIBS := -static -lgdi32 -ldxgi -ld3d11 -luuid -ld3dcompiler
@@ -151,19 +153,19 @@ $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.h: | $(OUT)/xdg
 $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.c: | $(OUT)/xdg
 	wayland-scanner client-header /usr/share/wayland-protocols/unstable/relative-pointer/relative-pointer-unstable-v1.xml $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.c
 
-$(OUT)/%$(EXT): $(EXTRA_SRC) RGFW.h | $(OUT)
+$(OUT)$(DIR)%$(EXT): $(EXTRA_SRC) RGFW.h | $(OUT)
 ifeq ($(CC),cl)
-	$(CC) $(DEFAULT_CFLAGS) examples/$(basename $(notdir $@))/$(basename $(notdir $@)).c $(EXTRA_SRC) $(CFLAGS) $(LIBS) /out:$@
+	$(CC) $(DEFAULT_CFLAGS) examples$(DIR)$(basename $(notdir $@))$(DIR)$(basename $(notdir $@)).c $(EXTRA_SRC) $(CFLAGS) $(LIBS) $(DIR)out:$@
 else
 	$(CC) $(DEFAULT_CFLAGS) examples/$(basename $(notdir $@))/$(basename $(notdir $@)).c $(EXTRA_SRC) $(CFLAGS) $(LIBS) -o $@
 endif
 
-$(OUT)/RGFW$(OBJ_EXT): DEFAULT_CFLAGS += -x c -D RGFW_NO_API -D RGFW_EXPORT -D RGFW_IMPLEMENTATION
-$(OUT)/RGFW$(OBJ_EXT): RGFW.h | $(OUT)
+$(OUT)$(DIR)RGFW$(OBJ_EXT): DEFAULT_CFLAGS += 
+$(OUT)$(DIR)RGFW$(OBJ_EXT): RGFW.h | $(OUT)
 ifeq ($(CC),cl)
-	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) /out:$@
+	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) $(DIR)out:$@
 else
-	$(CC) -c -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) -o $@
+	$(CC) -x c -D RGFW_NO_API -D RGFW_EXPORT -D RGFW_IMPLEMENTATION -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) -o $@
 endif
 
 $(OUT)/libRGFW$(STATIC_EXT): $(OUT)/RGFW$(OBJ_EXT) | $(OUT)
