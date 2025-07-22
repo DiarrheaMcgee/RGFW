@@ -153,15 +153,15 @@ $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.h: | $(OUT)/xdg
 $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.c: | $(OUT)/xdg
 	wayland-scanner client-header /usr/share/wayland-protocols/unstable/relative-pointer/relative-pointer-unstable-v1.xml $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.c
 
-$(OUT)$(DIR)%$(EXT): $(EXTRA_SRC) RGFW.h | $(OUT)
+$(OUT)/%$(EXT): $(EXTRA_SRC) RGFW.h | $(OUT)
 ifeq ($(CC),cl)
 	$(CC) $(DEFAULT_CFLAGS) examples$(DIR)$(basename $(notdir $@))$(DIR)$(basename $(notdir $@)).c $(EXTRA_SRC) $(CFLAGS) $(LIBS) $(DIR)out:$@
 else
 	$(CC) $(DEFAULT_CFLAGS) examples/$(basename $(notdir $@))/$(basename $(notdir $@)).c $(EXTRA_SRC) $(CFLAGS) $(LIBS) -o $@
 endif
 
-$(OUT)$(DIR)RGFW$(OBJ_EXT): DEFAULT_CFLAGS += 
-$(OUT)$(DIR)RGFW$(OBJ_EXT): RGFW.h | $(OUT)
+$(OUT)/RGFW$(OBJ_EXT): DEFAULT_CFLAGS += 
+$(OUT)/RGFW$(OBJ_EXT): RGFW.h | $(OUT)
 ifeq ($(CC),cl)
 	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) \out:$@
 else
