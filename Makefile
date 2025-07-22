@@ -93,7 +93,7 @@ else
 		DEFAULT_CFLAGS += -D _WIN32_WINNT=0x0501
 	endif
 	ifeq ($(CC),cc)
-		CC := cl
+		CC := gcc
 	endif
 
 endif
