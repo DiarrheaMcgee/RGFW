@@ -1,12 +1,11 @@
-DEFAULT_CFLAGS := -I./
 OUT            ?= out
-CC             ?= cc
 AR             ?= ar
 .DEFAULT_GOAL   = all
 
 NO_GLES ?= 1
 NO_OSMESA ?= 1
 NO_EGL ?= 1
+DIR := /
 
 DETECTED_OS = $(shell uname 2>/dev/null || echo unknown)
 
@@ -29,6 +28,7 @@ ifeq ($(DETECTED_OS),Linux)
 	OBJ_EXT := .o
 	STATIC_EXT := .a
 	SHARED_EXT := .so
+	DEFAULT_CFLAGS := -I./
 
 	ifeq ($(RGFW_WAYLAND),1)
 
@@ -63,6 +63,8 @@ else ifeq ($(DETECTED_OS),Darwin)
 	OBJ_EXT := .o
 	STATIC_EXT := .a
 	SHARED_EXT := .dylib
+	DEFAULT_CFLAGS := -I./
+	NO_VULKAN := 1
 
 	LIBS := -framework CoreVideo -framework Cocoa -framework OpenGL -framework IOKit
 
@@ -73,6 +75,7 @@ else ifeq ($(DETECTED_OS),Darwin)
 else ifeq ($(DETECTED_OS),web)
 
 	EXT := .js
+	DEFAULT_CFLAGS := -I./
 	WASM_LINK_GL1 := -s LEGACY_GL_EMULATION -D LEGACY_GL_EMULATION -sGL_UNSAFE_OPTS=0
 	WASM_LINK_GL2 := -s FULL_ES2 -s USE_WEBGL2
 	WASM_LINK_GL3 := -s FULL_ES3 -s USE_WEBGL2
@@ -83,14 +86,28 @@ else ifeq ($(DETECTED_OS),web)
 else
 
 	EXT = .exe
+	OBJ_EXT := .obj
 	STATIC_EXT = .lib
 	SHARED_EXT = .dll
-	DX11_LIBS := -static -lgdi32 -ldxgi -ld3d11 -luuid -ld3dcompiler
-	VULKAN_LIBS := -lgdi32 -I $(VULKAN_SDK)/Include -L $(VULKAN_SDK)/Lib -lvulkan-1
-	LIBS := -lopengl32 -static -lgdi32 -ggdb
 
-	ifneq ($(CC),zig cc)
-		DEFAULT_CFLAGS += -D _WIN32_WINNT=0x0501
+	ifeq ($(CC),cl)
+		DEFAULT_CFLAGS := /I.\\ /D_WIN32_WINNT=0x0501
+		DX11_LIBS := /MT /link gdi32.lib /link dxgi.lib /link d3d11.lib /link uuid.lib /link d3dcompiler.lib
+		VULKAN_LIBS := /link gdi32.lib /I $(VULKAN_SDK)/Include /LIBPATH:$(VULKAN_SDK)/Lib -lvulkan-1
+		LIBS := /link opengl32.lib /link gdi32.lib
+		DIR := \\
+	else
+		DEFAULT_CFLAGS := -I./
+		ifneq ($(CC),zig cc)
+			DEFAULT_CFLAGS += -D _WIN32_WINNT=0x0501
+		endif
+		DX11_LIBS := -static -lgdi32 -ldxgi -ld3d11 -luuid -ld3dcompiler
+		VULKAN_LIBS := -lgdi32 -I $(VULKAN_SDK)/Include -L $(VULKAN_SDK)/Lib -lvulkan-1
+		LIBS := -lopengl32 -static -lgdi32
+	endif
+
+	ifeq ($(CC),cc)
+		CC := gcc
 	endif
 
 endif
@@ -100,21 +117,22 @@ ifneq ($(DETECTED_OS),Linux)
 endif
 
 ifeq ($(CPEEPEE),1)
+
 	ifneq ($(DETECTED_OS),Darwin)
 		ifeq ($(CPEEPEE),1)
 			DEFAULT_CFLAGS += -x c -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
 		else ifneq ($(CC),emcc)
 			DEFAULT_CFLAGS += -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wnested-externs -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
 		endif
-
-endif
+	endif
 
 	NO_VULKAN := 1
+
 endif
 
 .PHONY: clean
 clean:
-	-rm -rf $(OUT)
+	rm -rf $(OUT)
 
 $(OUT):
 	mkdir -p $(OUT)
@@ -136,41 +154,51 @@ $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.c: | $(OUT)/xdg
 	wayland-scanner client-header /usr/share/wayland-protocols/unstable/relative-pointer/relative-pointer-unstable-v1.xml $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.c
 
 $(OUT)/%$(EXT): $(EXTRA_SRC) RGFW.h | $(OUT)
-	@mkdir -p $(dir $@)
-	$(CC) $(DEFAULT_CFLAGS) examples/$(basename $(notdir $@))/$(basename $(notdir $@)).c $(EXTRA_SRC) $(CFLAGS) $(LIBS) -o $@
+ifeq ($(CC),cl)
+	$(CC) $(DEFAULT_CFLAGS) examples$(DIR)$(basename $(notdir $@))$(DIR)$(basename $(notdir $@)).c $(EXTRA_SRC) $(CFLAGS) /Fe$(subst /,$(DIR),$@) $(LIBS)
+else
+	$(CC) $(DEFAULT_CFLAGS) examples/$(basename $(notdir $@))/$(basename $(notdir $@)).c $(EXTRA_SRC) $(CFLAGS) -o $@ $(LIBS) $(CUSTOM_LIBS)
+endif
 
-$(OUT)/RGFW$(OBJ_EXT): DEFAULT_CFLAGS += -x c -D RGFW_NO_API -D RGFW_EXPORT -D RGFW_IMPLEMENTATION
 $(OUT)/RGFW$(OBJ_EXT): RGFW.h | $(OUT)
-	$(CC) -c -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $^ -o $@
+ifeq ($(CC),cl)
+	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) /TC $(subst /,$(DIR),$^) /c /Fo$(subst /,$(DIR),$@)
+else
+	$(CC) -x c -c -D RGFW_NO_API -D RGFW_EXPORT -D RGFW_IMPLEMENTATION -c -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $^ -o $@
+endif
 
 $(OUT)/libRGFW$(STATIC_EXT): $(OUT)/RGFW$(OBJ_EXT) | $(OUT)
-	ar rcs $@ $^
+	ar rcs $(subst /,$(DIR),$@) $(subst /,$(DIR),$^)
 libRGFW$(STATIC_EXT): $(OUT)/libRGFW$(STATIC_EXT) | $(OUT)
 
 $(OUT)/libRGFW$(SHARED_EXT): $(OUT)/RGFW$(OBJ_EXT) | $(OUT)
-	$(CC) -shared -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) -o $@
+ifeq ($(CC), cl)
+	link /dll /out:$(subst /,$(DIR),$@) $(subst /,$(DIR),$^)
+else
+	$(CC) -shared -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $^ -o $@ $(LIBS) $(CUSTOM_LIBS)
+endif
 libRGFW$(SHARED_EXT): $(OUT)/libRGFW$(SHARED_EXT)
 
-$(OUT)/basic$(EXT):         LIBS += $(WASM_LINK_GL1)
-$(OUT)/buffer$(EXT):        LIBS += $(WASM_LINK_GL1)
-$(OUT)/events$(EXT):        LIBS += $(WASM_LINK_GL1)
-$(OUT)/callbacks$(EXT):     LIBS += $(WASM_LINK_GL1)
-$(OUT)/flags$(EXT):         LIBS += $(WASM_LINK_GL1)
-$(OUT)/monitor$(EXT):       LIBS += $(WASM_LINK_GL1)
-$(OUT)/gl33_ctx$(EXT):      LIBS += $(WASM_LINK_GL1)
-$(OUT)/smooth-resize$(EXT): LIBS += $(WASM_LINK_GL1)
-$(OUT)/multi-window$(EXT):  LIBS += $(WASM_LINK_GL1)
-$(OUT)/icons$(EXT):         LIBS += -lm $(WASM_LINK_GL1)
-$(OUT)/gamepad$(EXT):       LIBS += -lm $(WASM_LINK_GL1)
-$(OUT)/silk$(EXT):          LIBS += -lm $(WASM_LINK_GL1)
-$(OUT)/camera$(EXT):        LIBS += -lm $(WASM_LINK_GL1)
-$(OUT)/gl33$(EXT):          LIBS += $(WASM_LINK_GL3)
-$(OUT)/portableGL$(EXT):    LIBS += -lm
-$(OUT)/gles2$(EXT):         LIBS += $(WASM_LINK_GL2)
-$(OUT)/egl$(EXT):           LIBS += -lEGL
-$(OUT)/webgpu$(EXT):        LIBS := -s USE_WEBGPU=1
-$(OUT)/gears$(EXT):         LIBS += -lm $(WASM_LINK_GL1)
-$(OUT)/osmesa_demo$(EXT):   LIBS += -lm -lOSMesa $(WASM_LINK_OSMESA)
+$(OUT)/basic$(EXT):         CUSTOM_LIBS := $(WASM_LINK_GL1)
+$(OUT)/buffer$(EXT):        CUSTOM_LIBS := $(WASM_LINK_GL1)
+$(OUT)/events$(EXT):        CUSTOM_LIBS := $(WASM_LINK_GL1)
+$(OUT)/callbacks$(EXT):     CUSTOM_LIBS := $(WASM_LINK_GL1)
+$(OUT)/flags$(EXT):         CUSTOM_LIBS := $(WASM_LINK_GL1)
+$(OUT)/monitor$(EXT):       CUSTOM_LIBS := $(WASM_LINK_GL1)
+$(OUT)/gl33_ctx$(EXT):      CUSTOM_LIBS := $(WASM_LINK_GL1)
+$(OUT)/smooth-resize$(EXT): CUSTOM_LIBS := $(WASM_LINK_GL1)
+$(OUT)/multi-window$(EXT):  CUSTOM_LIBS := $(WASM_LINK_GL1)
+$(OUT)/icons$(EXT):         CUSTOM_LIBS := -lm $(WASM_LINK_GL1)
+$(OUT)/gamepad$(EXT):       CUSTOM_LIBS := -lm $(WASM_LINK_GL1)
+$(OUT)/silk$(EXT):          CUSTOM_LIBS := -lm $(WASM_LINK_GL1)
+$(OUT)/camera$(EXT):        CUSTOM_LIBS := -lm $(WASM_LINK_GL1)
+$(OUT)/gl33$(EXT):          CUSTOM_LIBS := $(WASM_LINK_GL3)
+$(OUT)/portableGL$(EXT):    CUSTOM_LIBS := -lm
+$(OUT)/gles2$(EXT):         CUSTOM_LIBS := $(WASM_LINK_GL2)
+$(OUT)/egl$(EXT):           CUSTOM_LIBS := -lEGL
+$(OUT)/webgpu$(EXT):        CUSTOM_LIBS := -s USE_WEBGPU=1
+$(OUT)/gears$(EXT):         CUSTOM_LIBS := -lm $(WASM_LINK_GL1)
+$(OUT)/osmesa_demo$(EXT):   CUSTOM_LIBS := -lm -lOSMesa $(WASM_LINK_OSMESA)
 
 $(OUT)/microui_demo$(EXT): examples/microui_demo/microui.c examples/microui_demo/microui_demo.c
 	$(CC) -Iexamples/microui $(DEFAULT_CFLAGS) $(CFLAGS) $(WASM_LINK_MICROUI) $^ $(LIBS) -o $@
@@ -180,10 +208,14 @@ $(OUT)/metal$(EXT): examples/metal/metal.m $(OUT)/RGFW$(OBJ_EXT)
 	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) -o $@
 
 $(OUT)/vk10$(EXT): examples/vk10/vk10.c
+ifeq ($(CC), cl)
+	@echo vulkan doesnt work yet
+else
 	@mkdir -p $(OUT)/shaders
 	glslangValidator -V examples/vk10/shaders/vert.vert -o $(OUT)/shaders/vert.h --vn vert_code
 	glslangValidator -V examples/vk10/shaders/frag.frag -o $(OUT)/shaders/frag.h --vn frag_code
 	$(CC) -I$(OUT) $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(VULKAN_LIBS) -o $@
+endif
 
 EVERYTHING := \
 	basic \
@@ -217,6 +249,10 @@ ifneq ($(NO_EGL),1)
 	EVERYTHING += egl
 endif
 
+ifneq (,$(filter $(CC),gcc g++))
+	EVERYTHING += gears
+endif
+
 ifeq ($(CPEEPEE),0)
 	EVERYTHING += silk
 endif
@@ -228,9 +264,7 @@ endif
 ifeq ($(DETECTED_OS),web)
 	EVERYTHING += webgpu microui_demo
 else
-	EVERYTHING += \
-		      portableGL \
-		      gears
+	EVERYTHING += portableGL
 endif
 
 $(EVERYTHING): %: $(OUT)/%$(EXT)
