@@ -1,4 +1,3 @@
-DEFAULT_CFLAGS := -I./
 OUT            ?= out
 AR             ?= ar
 .DEFAULT_GOAL   = all
@@ -28,6 +27,7 @@ ifeq ($(DETECTED_OS),Linux)
 	OBJ_EXT := .o
 	STATIC_EXT := .a
 	SHARED_EXT := .so
+	DEFAULT_CFLAGS := -I./
 
 	ifeq ($(RGFW_WAYLAND),1)
 
@@ -62,6 +62,7 @@ else ifeq ($(DETECTED_OS),Darwin)
 	OBJ_EXT := .o
 	STATIC_EXT := .a
 	SHARED_EXT := .dylib
+	DEFAULT_CFLAGS := -I./
 	NO_VULKAN := 1
 
 	LIBS := -framework CoreVideo -framework Cocoa -framework OpenGL -framework IOKit
@@ -73,6 +74,7 @@ else ifeq ($(DETECTED_OS),Darwin)
 else ifeq ($(DETECTED_OS),web)
 
 	EXT := .js
+	DEFAULT_CFLAGS := -I./
 	WASM_LINK_GL1 := -s LEGACY_GL_EMULATION -D LEGACY_GL_EMULATION -sGL_UNSAFE_OPTS=0
 	WASM_LINK_GL2 := -s FULL_ES2 -s USE_WEBGL2
 	WASM_LINK_GL3 := -s FULL_ES3 -s USE_WEBGL2
@@ -85,9 +87,18 @@ else
 	EXT = .exe
 	STATIC_EXT = .lib
 	SHARED_EXT = .dll
-	DX11_LIBS := -static -lgdi32 -ldxgi -ld3d11 -luuid -ld3dcompiler
-	VULKAN_LIBS := -lgdi32 -I $(VULKAN_SDK)/Include -L $(VULKAN_SDK)/Lib -lvulkan-1
-	LIBS := -lopengl32 -static -lgdi32 -ggdb
+
+	ifeq ($(CC),cl)
+		DX11_LIBS := /MT gdi32.lib dxgi.lib d3d11.lib uuid.lib d3dcompiler.lib
+		VULKAN_LIBS := gdi32.lib /I $(VULKAN_SDK)/Include /LIBPATH:$(VULKAN_SDK)/Lib -lvulkan-1
+		LIBS := opengl32.lib lgdi32.lib
+		DEFAULT_CFLAGS := /I./ -D _WIN32_WINNT=0x0501
+	else
+		DEFAULT_CFLAGS := -I./
+		DX11_LIBS := -static -lgdi32 -ldxgi -ld3d11 -luuid -ld3dcompiler
+		VULKAN_LIBS := -lgdi32 -I $(VULKAN_SDK)/Include -L $(VULKAN_SDK)/Lib -lvulkan-1
+		LIBS := -lopengl32 -static -lgdi32
+	endif
 
 	ifneq ($(CC),zig cc)
 		DEFAULT_CFLAGS += -D _WIN32_WINNT=0x0501
@@ -140,8 +151,11 @@ $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.c: | $(OUT)/xdg
 	wayland-scanner client-header /usr/share/wayland-protocols/unstable/relative-pointer/relative-pointer-unstable-v1.xml $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.c
 
 $(OUT)/%$(EXT): $(EXTRA_SRC) RGFW.h | $(OUT)
-	@mkdir -p $(dir $@)
+ifeq ($(CC),cl)
+	$(CC) $(DEFAULT_CFLAGS) examples/$(basename $(notdir $@))/$(basename $(notdir $@)).c $(EXTRA_SRC) $(CFLAGS) $(LIBS) /out:$@
+else
 	$(CC) $(DEFAULT_CFLAGS) examples/$(basename $(notdir $@))/$(basename $(notdir $@)).c $(EXTRA_SRC) $(CFLAGS) $(LIBS) -o $@
+endif
 
 $(OUT)/RGFW$(OBJ_EXT): DEFAULT_CFLAGS += -x c -D RGFW_NO_API -D RGFW_EXPORT -D RGFW_IMPLEMENTATION
 $(OUT)/RGFW$(OBJ_EXT): RGFW.h | $(OUT)
