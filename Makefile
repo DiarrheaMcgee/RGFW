@@ -91,21 +91,21 @@ else
 	SHARED_EXT = .dll
 
 	ifeq ($(CC),cl)
-		DEFAULT_CFLAGS := /I./ -D _WIN32_WINNT=0x0501
+		DEFAULT_CFLAGS := /I./ /D _WIN32_WINNT=0x0501
 		DX11_LIBS := /MT gdi32.lib dxgi.lib d3d11.lib uuid.lib d3dcompiler.lib
 		VULKAN_LIBS := gdi32.lib /I $(VULKAN_SDK)/Include /LIBPATH:$(VULKAN_SDK)/Lib -lvulkan-1
 		LIBS := opengl32.lib gdi32.lib
 		DIR := \\
 	else
 		DEFAULT_CFLAGS := -I./
+		ifneq ($(CC),zig cc)
+			DEFAULT_CFLAGS += -D _WIN32_WINNT=0x0501
+		endif
 		DX11_LIBS := -static -lgdi32 -ldxgi -ld3d11 -luuid -ld3dcompiler
 		VULKAN_LIBS := -lgdi32 -I $(VULKAN_SDK)/Include -L $(VULKAN_SDK)/Lib -lvulkan-1
 		LIBS := -lopengl32 -static -lgdi32
 	endif
 
-	ifneq ($(CC),zig cc)
-		DEFAULT_CFLAGS += -D _WIN32_WINNT=0x0501
-	endif
 	ifeq ($(CC),cc)
 		CC := gcc
 	endif
@@ -160,7 +160,6 @@ else
 	$(CC) $(DEFAULT_CFLAGS) examples/$(basename $(notdir $@))/$(basename $(notdir $@)).c $(EXTRA_SRC) $(CFLAGS) $(LIBS) -o $@
 endif
 
-$(OUT)/RGFW$(OBJ_EXT): DEFAULT_CFLAGS += 
 $(OUT)/RGFW$(OBJ_EXT): RGFW.h | $(OUT)
 ifeq ($(CC),cl)
 	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) $(subst /,$(DIR),$^) $(LIBS) /out:$(subst /,$(DIR),$@)
