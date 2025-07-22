@@ -92,9 +92,9 @@ else
 
 	ifeq ($(CC),cl)
 		DEFAULT_CFLAGS := /I.\\ /D_WIN32_WINNT=0x0501
-		DX11_LIBS := /MT gdi32.lib dxgi.lib d3d11.lib uuid.lib d3dcompiler.lib
-		VULKAN_LIBS := gdi32.lib /I $(VULKAN_SDK)/Include /LIBPATH:$(VULKAN_SDK)/Lib -lvulkan-1
-		LIBS := opengl32.lib gdi32.lib
+		DX11_LIBS := /MT /link gdi32.lib /link dxgi.lib /link d3d11.lib /link uuid.lib /link d3dcompiler.lib
+		VULKAN_LIBS := /link gdi32.lib /I $(VULKAN_SDK)/Include /LIBPATH:$(VULKAN_SDK)/Lib -lvulkan-1
+		LIBS := /link opengl32.lib /link gdi32.lib
 		DIR := \\
 	else
 		DEFAULT_CFLAGS := -I./
@@ -173,7 +173,7 @@ libRGFW$(STATIC_EXT): $(OUT)/libRGFW$(STATIC_EXT) | $(OUT)
 
 $(OUT)/libRGFW$(SHARED_EXT): $(OUT)/RGFW$(OBJ_EXT) | $(OUT)
 ifeq ($(CC), cl)
-	link /DLL /OUT:$(subst /,$(DIR),$@) $(subst /,$(DIR),$^)
+	link /dll /out:$(subst /,$(DIR),$@) $(subst /,$(DIR),$^)
 else
 	$(CC) -shared -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) -o $@
 endif
