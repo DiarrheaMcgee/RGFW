@@ -93,7 +93,7 @@ else
 	ifeq ($(CC),cl)
 		DX11_LIBS := /MT gdi32.lib dxgi.lib d3d11.lib uuid.lib d3dcompiler.lib
 		VULKAN_LIBS := gdi32.lib /I $(VULKAN_SDK)/Include /LIBPATH:$(VULKAN_SDK)/Lib -lvulkan-1
-		LIBS := opengl32.lib lgdi32.lib
+		LIBS := opengl32.lib gdi32.lib
 		DEFAULT_CFLAGS := /I./ -D _WIN32_WINNT=0x0501
 		DIR := \\
 	else
@@ -155,7 +155,7 @@ $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.c: | $(OUT)/xdg
 
 $(OUT)/%$(EXT): $(EXTRA_SRC) RGFW.h | $(OUT)
 ifeq ($(CC),cl)
-	$(CC) $(DEFAULT_CFLAGS) examples$(DIR)$(basename $(notdir $@))$(DIR)$(basename $(notdir $@)).c $(EXTRA_SRC) $(CFLAGS) $(LIBS) $(DIR)out:$@
+	$(CC) $(DEFAULT_CFLAGS) examples$(DIR)$(basename $(notdir $@))$(DIR)$(basename $(notdir $@)).c $(EXTRA_SRC) $(CFLAGS) $(LIBS) $(DIR)out:$(subst /,$(DIR),$@)
 else
 	$(CC) $(DEFAULT_CFLAGS) examples/$(basename $(notdir $@))/$(basename $(notdir $@)).c $(EXTRA_SRC) $(CFLAGS) $(LIBS) -o $@
 endif
@@ -163,7 +163,7 @@ endif
 $(OUT)/RGFW$(OBJ_EXT): DEFAULT_CFLAGS += 
 $(OUT)/RGFW$(OBJ_EXT): RGFW.h | $(OUT)
 ifeq ($(CC),cl)
-	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) /out:$@
+	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) /out:$(subst /,$(DIR),$@)
 else
 	$(CC) -x c -c -D RGFW_NO_API -D RGFW_EXPORT -D RGFW_IMPLEMENTATION -c -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) -o $@
 endif
