@@ -85,6 +85,7 @@ else ifeq ($(DETECTED_OS),web)
 else
 
 	EXT = .exe
+	OBJ_EXT := .obj
 	STATIC_EXT = .lib
 	SHARED_EXT = .dll
 
@@ -159,7 +160,11 @@ endif
 
 $(OUT)/RGFW$(OBJ_EXT): DEFAULT_CFLAGS += -x c -D RGFW_NO_API -D RGFW_EXPORT -D RGFW_IMPLEMENTATION
 $(OUT)/RGFW$(OBJ_EXT): RGFW.h | $(OUT)
-	$(CC) -c -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $^ -o $@
+ifeq ($(CC),cl)
+	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) /out:$@
+else
+	$(CC) -c -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) -o $@
+endif
 
 $(OUT)/libRGFW$(STATIC_EXT): $(OUT)/RGFW$(OBJ_EXT) | $(OUT)
 	ar rcs $@ $^
