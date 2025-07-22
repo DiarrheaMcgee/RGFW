@@ -155,14 +155,14 @@ $(OUT)/xdg/relative-pointer-unstable-v1-client-protocol.c: | $(OUT)/xdg
 
 $(OUT)/%$(EXT): $(EXTRA_SRC) RGFW.h | $(OUT)
 ifeq ($(CC),cl)
-	$(CC) $(DEFAULT_CFLAGS) examples$(DIR)$(basename $(notdir $@))$(DIR)$(basename $(notdir $@)).c $(EXTRA_SRC) $(CFLAGS) $(LIBS) /out:$(subst /,$(DIR),$@)
+	$(CC) $(DEFAULT_CFLAGS) examples$(DIR)$(basename $(notdir $@))$(DIR)$(basename $(notdir $@)).c $(EXTRA_SRC) $(CFLAGS) $(LIBS) /Fe:$(subst /,$(DIR),$@)
 else
 	$(CC) $(DEFAULT_CFLAGS) examples/$(basename $(notdir $@))/$(basename $(notdir $@)).c $(EXTRA_SRC) $(CFLAGS) $(LIBS) -o $@
 endif
 
 $(OUT)/RGFW$(OBJ_EXT): RGFW.h | $(OUT)
 ifeq ($(CC),cl)
-	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) /TC $(subst /,$(DIR),$^) $(LIBS) /out:$(subst /,$(DIR),$@)
+	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) /TC $(subst /,$(DIR),$^) $(LIBS) /Fo:$(subst /,$(DIR),$@)
 else
 	$(CC) -x c -c -D RGFW_NO_API -D RGFW_EXPORT -D RGFW_IMPLEMENTATION -c -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) -o $@
 endif
