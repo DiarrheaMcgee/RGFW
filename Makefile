@@ -103,6 +103,7 @@ ifneq ($(DETECTED_OS),Linux)
 endif
 
 ifeq ($(CPEEPEE),1)
+
 	ifneq ($(DETECTED_OS),Darwin)
 		ifeq ($(CPEEPEE),1)
 			DEFAULT_CFLAGS += -x c -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
@@ -110,6 +111,8 @@ ifeq ($(CPEEPEE),1)
 			DEFAULT_CFLAGS += -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wnested-externs -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
 		endif
 	endif
+
+	NO_VULKAN := 1
 
 endif
 
