@@ -91,10 +91,10 @@ else
 	SHARED_EXT = .dll
 
 	ifeq ($(CC),cl)
+		DEFAULT_CFLAGS := -x c /I./ -D _WIN32_WINNT=0x0501
 		DX11_LIBS := /MT gdi32.lib dxgi.lib d3d11.lib uuid.lib d3dcompiler.lib
 		VULKAN_LIBS := gdi32.lib /I $(VULKAN_SDK)/Include /LIBPATH:$(VULKAN_SDK)/Lib -lvulkan-1
 		LIBS := opengl32.lib gdi32.lib
-		DEFAULT_CFLAGS := /I./ -D _WIN32_WINNT=0x0501
 		DIR := \\
 	else
 		DEFAULT_CFLAGS := -I./
@@ -163,17 +163,21 @@ endif
 $(OUT)/RGFW$(OBJ_EXT): DEFAULT_CFLAGS += 
 $(OUT)/RGFW$(OBJ_EXT): RGFW.h | $(OUT)
 ifeq ($(CC),cl)
-	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) /out:$(subst /,$(DIR),$@)
+	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) $(subst /,$(DIR),$^) $(LIBS) /out:$(subst /,$(DIR),$@)
 else
 	$(CC) -x c -c -D RGFW_NO_API -D RGFW_EXPORT -D RGFW_IMPLEMENTATION -c -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) -o $@
 endif
 
 $(OUT)/libRGFW$(STATIC_EXT): $(OUT)/RGFW$(OBJ_EXT) | $(OUT)
-	ar rcs $@ $^
+	ar rcs $(subst /,$(DIR),$@) $(subst /,$(DIR),$^)
 libRGFW$(STATIC_EXT): $(OUT)/libRGFW$(STATIC_EXT) | $(OUT)
 
 $(OUT)/libRGFW$(SHARED_EXT): $(OUT)/RGFW$(OBJ_EXT) | $(OUT)
+ifeq ($(CC), cl)
+	link /DLL /OUT:$(subst /,$(DIR),$@) $(subst /,$(DIR),$^)
+else
 	$(CC) -shared -fPIC $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) -o $@
+endif
 libRGFW$(SHARED_EXT): $(OUT)/libRGFW$(SHARED_EXT)
 
 $(OUT)/basic$(EXT):         LIBS += $(WASM_LINK_GL1)
