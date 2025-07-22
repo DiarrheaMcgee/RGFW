@@ -1,6 +1,5 @@
 DEFAULT_CFLAGS := -I./
 OUT            ?= out
-CC             ?= gcc
 AR             ?= ar
 .DEFAULT_GOAL   = all
 
@@ -63,6 +62,7 @@ else ifeq ($(DETECTED_OS),Darwin)
 	OBJ_EXT := .o
 	STATIC_EXT := .a
 	SHARED_EXT := .dylib
+	NO_VULKAN := 1
 
 	LIBS := -framework CoreVideo -framework Cocoa -framework OpenGL -framework IOKit
 
@@ -92,6 +92,9 @@ else
 	ifneq ($(CC),zig cc)
 		DEFAULT_CFLAGS += -D _WIN32_WINNT=0x0501
 	endif
+	ifeq ($(CC),cc)
+		CC := cl
+	endif
 
 endif
 
@@ -106,15 +109,13 @@ ifeq ($(CPEEPEE),1)
 		else ifneq ($(CC),emcc)
 			DEFAULT_CFLAGS += -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wnested-externs -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
 		endif
+	endif
 
-endif
-
-	NO_VULKAN := 1
 endif
 
 .PHONY: clean
 clean:
-	-rm -rf $(OUT)
+	rm -rf $(OUT)
 
 $(OUT):
 	mkdir -p $(OUT)
