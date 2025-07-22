@@ -91,7 +91,7 @@ else
 	SHARED_EXT = .dll
 
 	ifeq ($(CC),cl)
-		DEFAULT_CFLAGS := /I.\\ /D _WIN32_WINNT=0x0501
+		DEFAULT_CFLAGS := /I.\\ /D_WIN32_WINNT=0x0501
 		DX11_LIBS := /MT gdi32.lib dxgi.lib d3d11.lib uuid.lib d3dcompiler.lib
 		VULKAN_LIBS := gdi32.lib /I $(VULKAN_SDK)/Include /LIBPATH:$(VULKAN_SDK)/Lib -lvulkan-1
 		LIBS := opengl32.lib gdi32.lib
