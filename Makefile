@@ -93,11 +93,10 @@ else
 
 	ifeq ($(CC),cl)
 		DEFAULT_CFLAGS := /I.\\ /D_WIN32_WINNT=0x0501
-		DX11_LIBS := /MT /link gdi32.lib /link dxgi.lib /link d3d11.lib /link uuid.lib /link d3dcompiler.lib
-		VULKAN_LIBS := /link gdi32.lib /I $(VULKAN_SDK)/Include /LIBPATH:$(VULKAN_SDK)/Lib -lvulkan-1
 		LIBS := /link opengl32.lib /link gdi32.lib
 		DIR := \\
 		LIBM :=
+		NO_VULKAN := 1
 	else
 		DEFAULT_CFLAGS := -I./
 		ifneq ($(CC),zig cc)
@@ -190,34 +189,32 @@ $(OUT)/monitor.js:       LIBS += $(WASM_LINK_GL1)
 $(OUT)/gl33_ctx.js:      LIBS += $(WASM_LINK_GL1)
 $(OUT)/smooth-resize.js: LIBS += $(WASM_LINK_GL1)
 $(OUT)/multi-window.js:  LIBS += $(WASM_LINK_GL1)
-$(OUT)/icons.js:         LIBS += $(WASM_LINK_GL1)
-$(OUT)/gamepad.js:       LIBS += $(WASM_LINK_GL1)
-$(OUT)/silk.js:          LIBS += $(WASM_LINK_GL1)
-$(OUT)/camera.js:        LIBS += $(WASM_LINK_GL1)
-$(OUT)/gears.js:         LIBS += $(WASM_LINK_GL1)
+$(OUT)/icons.js:         LIBS += $(LIBM) $(WASM_LINK_GL1)
+$(OUT)/gamepad.js:       LIBS += $(LIBM) $(WASM_LINK_GL1)
+$(OUT)/silk.js:          LIBS += $(LIBM) $(WASM_LINK_GL1)
+$(OUT)/camera.js:        LIBS += $(LIBM) $(WASM_LINK_GL1)
+$(OUT)/gears.js:         LIBS += $(LIBM) $(WASM_LINK_GL1)
 $(OUT)/gles2.js:         LIBS += $(WASM_LINK_GL2)
 $(OUT)/gl33.js:          LIBS += $(WASM_LINK_GL3)
 $(OUT)/osmesa_demo.js:   LIBS += -lOSMesa $(WASM_LINK_OSMESA)
 $(OUT)/webgpu.js:        LIBS += -s USE_WEBGPU=1
 
-$(OUT)/icons.exe:         LIBS += $(LIBM)
-$(OUT)/gamepad.exe:       LIBS += $(LIBM)
-$(OUT)/silk.exe:          LIBS += $(LIBM)
-$(OUT)/camera.exe:        LIBS += $(LIBM)
-$(OUT)/portableGL.exe:    LIBS += $(LIBM)
-#$(OUT)/egl.exe:           LIBS += -lEGL
-$(OUT)/gears.exe:         LIBS += $(LIBM)
-#$(OUT)/osmesa_demo.exe:   CUSTOM_LIBS := -lm -lOSMesa $(WASM_LINK_OSMESA)
+$(OUT)/icons.exe:      LIBS += $(LIBM)
+$(OUT)/gamepad.exe:    LIBS += $(LIBM)
+$(OUT)/silk.exe:       LIBS += $(LIBM)
+$(OUT)/camera.exe:     LIBS += $(LIBM)
+$(OUT)/portableGL.exe: LIBS += $(LIBM)
+$(OUT)/gears.exe:      LIBS += $(LIBM)
 
-$(OUT)/icons:         LIBS += $(LIBM)
-$(OUT)/gamepad:       LIBS += $(LIBM)
-$(OUT)/silk:          LIBS += $(LIBM)
-$(OUT)/camera:        LIBS += $(LIBM)
-$(OUT)/portableGL:    LIBS += $(LIBM)
-$(OUT)/egl:           LIBS += -lEGL
-$(OUT)/webgpu:        LIBS += -s USE_WEBGPU=1
-$(OUT)/gears:         LIBS += $(LIBM)
-$(OUT)/osmesa_demo:   LIBS += $(LIBM) -lOSMesa
+$(OUT)/icons:       LIBS += $(LIBM)
+$(OUT)/gamepad:     LIBS += $(LIBM)
+$(OUT)/silk:        LIBS += $(LIBM)
+$(OUT)/camera:      LIBS += $(LIBM)
+$(OUT)/portableGL:  LIBS += $(LIBM)
+$(OUT)/egl:         LIBS += -lEGL
+$(OUT)/webgpu:      LIBS += -s USE_WEBGPU=1
+$(OUT)/gears:       LIBS += $(LIBM)
+$(OUT)/osmesa_demo: LIBS += $(LIBM) -lOSMesa
 
 $(OUT)/microui_demo$(EXT): examples/microui_demo/microui.c examples/microui_demo/microui_demo.c
 	$(CC) -Iexamples/microui $(DEFAULT_CFLAGS) $(CFLAGS) $(WASM_LINK_MICROUI) $^ $(LIBS) -o $@
@@ -227,14 +224,10 @@ $(OUT)/metal$(EXT): examples/metal/metal.m $(OUT)/RGFW$(OBJ_EXT)
 	$(CC) $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(LIBS) -o $@
 
 $(OUT)/vk10$(EXT): examples/vk10/vk10.c
-ifeq ($(CC), cl)
-	@echo vulkan doesnt work yet
-else
 	@mkdir -p $(OUT)/shaders
 	glslangValidator -V examples/vk10/shaders/vert.vert -o $(OUT)/shaders/vert.h --vn vert_code
 	glslangValidator -V examples/vk10/shaders/frag.frag -o $(OUT)/shaders/frag.h --vn frag_code
 	$(CC) -I$(OUT) $(DEFAULT_CFLAGS) $(CFLAGS) $^ $(VULKAN_LIBS) -o $@
-endif
 
 EVERYTHING := \
 	basic \
