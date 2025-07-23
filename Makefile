@@ -6,6 +6,7 @@ NO_GLES ?= 1
 NO_OSMESA ?= 1
 NO_EGL ?= 1
 DIR := /
+LIBM := -lm
 
 DETECTED_OS = $(shell uname 2>/dev/null || echo unknown)
 
@@ -96,6 +97,7 @@ else
 		VULKAN_LIBS := /link gdi32.lib /I $(VULKAN_SDK)/Include /LIBPATH:$(VULKAN_SDK)/Lib -lvulkan-1
 		LIBS := /link opengl32.lib /link gdi32.lib
 		DIR := \\
+		LIBM :=
 	else
 		DEFAULT_CFLAGS := -I./
 		ifneq ($(CC),zig cc)
@@ -179,26 +181,43 @@ else
 endif
 libRGFW$(SHARED_EXT): $(OUT)/libRGFW$(SHARED_EXT)
 
-$(OUT)/basic$(EXT):         CUSTOM_LIBS := $(WASM_LINK_GL1)
-$(OUT)/buffer$(EXT):        CUSTOM_LIBS := $(WASM_LINK_GL1)
-$(OUT)/events$(EXT):        CUSTOM_LIBS := $(WASM_LINK_GL1)
-$(OUT)/callbacks$(EXT):     CUSTOM_LIBS := $(WASM_LINK_GL1)
-$(OUT)/flags$(EXT):         CUSTOM_LIBS := $(WASM_LINK_GL1)
-$(OUT)/monitor$(EXT):       CUSTOM_LIBS := $(WASM_LINK_GL1)
-$(OUT)/gl33_ctx$(EXT):      CUSTOM_LIBS := $(WASM_LINK_GL1)
-$(OUT)/smooth-resize$(EXT): CUSTOM_LIBS := $(WASM_LINK_GL1)
-$(OUT)/multi-window$(EXT):  CUSTOM_LIBS := $(WASM_LINK_GL1)
-$(OUT)/icons$(EXT):         CUSTOM_LIBS := -lm $(WASM_LINK_GL1)
-$(OUT)/gamepad$(EXT):       CUSTOM_LIBS := -lm $(WASM_LINK_GL1)
-$(OUT)/silk$(EXT):          CUSTOM_LIBS := -lm $(WASM_LINK_GL1)
-$(OUT)/camera$(EXT):        CUSTOM_LIBS := -lm $(WASM_LINK_GL1)
-$(OUT)/gl33$(EXT):          CUSTOM_LIBS := $(WASM_LINK_GL3)
-$(OUT)/portableGL$(EXT):    CUSTOM_LIBS := -lm
-$(OUT)/gles2$(EXT):         CUSTOM_LIBS := $(WASM_LINK_GL2)
-$(OUT)/egl$(EXT):           CUSTOM_LIBS := -lEGL
-$(OUT)/webgpu$(EXT):        CUSTOM_LIBS := -s USE_WEBGPU=1
-$(OUT)/gears$(EXT):         CUSTOM_LIBS := -lm $(WASM_LINK_GL1)
-$(OUT)/osmesa_demo$(EXT):   CUSTOM_LIBS := -lm -lOSMesa $(WASM_LINK_OSMESA)
+$(OUT)/basic.js:         LIBS += $(WASM_LINK_GL1)
+$(OUT)/buffer.js:        LIBS += $(WASM_LINK_GL1)
+$(OUT)/events.js:        LIBS += $(WASM_LINK_GL1)
+$(OUT)/callbacks.js:     LIBS += $(WASM_LINK_GL1)
+$(OUT)/flags.js:         LIBS += $(WASM_LINK_GL1)
+$(OUT)/monitor.js:       LIBS += $(WASM_LINK_GL1)
+$(OUT)/gl33_ctx.js:      LIBS += $(WASM_LINK_GL1)
+$(OUT)/smooth-resize.js: LIBS += $(WASM_LINK_GL1)
+$(OUT)/multi-window.js:  LIBS += $(WASM_LINK_GL1)
+$(OUT)/icons.js:         LIBS += $(WASM_LINK_GL1)
+$(OUT)/gamepad.js:       LIBS += $(WASM_LINK_GL1)
+$(OUT)/silk.js:          LIBS += $(WASM_LINK_GL1)
+$(OUT)/camera.js:        LIBS += $(WASM_LINK_GL1)
+$(OUT)/gears.js:         LIBS += $(WASM_LINK_GL1)
+$(OUT)/gles2.js:         LIBS += $(WASM_LINK_GL2)
+$(OUT)/gl33.js:          LIBS += $(WASM_LINK_GL3)
+$(OUT)/osmesa_demo.js:   LIBS += -lOSMesa $(WASM_LINK_OSMESA)
+$(OUT)/webgpu.js:        LIBS += -s USE_WEBGPU=1
+
+$(OUT)/icons.exe:         LIBS += $(LIBM)
+$(OUT)/gamepad.exe:       LIBS += $(LIBM)
+$(OUT)/silk.exe:          LIBS += $(LIBM)
+$(OUT)/camera.exe:        LIBS += $(LIBM)
+$(OUT)/portableGL.exe:    LIBS += $(LIBM)
+#$(OUT)/egl.exe:           LIBS += -lEGL
+$(OUT)/gears.exe:         LIBS += $(LIBM)
+#$(OUT)/osmesa_demo.exe:   CUSTOM_LIBS := -lm -lOSMesa $(WASM_LINK_OSMESA)
+
+$(OUT)/icons:         LIBS += $(LIBM)
+$(OUT)/gamepad:       LIBS += $(LIBM)
+$(OUT)/silk:          LIBS += $(LIBM)
+$(OUT)/camera:        LIBS += $(LIBM)
+$(OUT)/portableGL:    LIBS += $(LIBM)
+$(OUT)/egl:           LIBS += -lEGL
+$(OUT)/webgpu:        LIBS += -s USE_WEBGPU=1
+$(OUT)/gears:         LIBS += $(LIBM)
+$(OUT)/osmesa_demo:   LIBS += $(LIBM) -lOSMesa
 
 $(OUT)/microui_demo$(EXT): examples/microui_demo/microui.c examples/microui_demo/microui_demo.c
 	$(CC) -Iexamples/microui $(DEFAULT_CFLAGS) $(CFLAGS) $(WASM_LINK_MICROUI) $^ $(LIBS) -o $@
