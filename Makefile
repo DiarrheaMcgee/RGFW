@@ -1,6 +1,6 @@
-OUT            ?= out
-AR             ?= ar
-.DEFAULT_GOAL   = all
+OUT ?= out
+AR ?= ar
+.DEFAULT_GOAL = all
 
 NO_GLES ?= 1
 NO_OSMESA ?= 1
