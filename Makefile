@@ -191,7 +191,6 @@ $(OUT)/smooth-resize.js: LIBS += $(WASM_LINK_GL1)
 $(OUT)/multi-window.js:  LIBS += $(WASM_LINK_GL1)
 $(OUT)/icons.js:         LIBS += $(LIBM) $(WASM_LINK_GL1)
 $(OUT)/gamepad.js:       LIBS += $(LIBM) $(WASM_LINK_GL1)
-$(OUT)/silk.js:          LIBS += $(LIBM) $(WASM_LINK_GL1)
 $(OUT)/camera.js:        LIBS += $(LIBM) $(WASM_LINK_GL1)
 $(OUT)/gears.js:         LIBS += $(LIBM) $(WASM_LINK_GL1)
 $(OUT)/gles2.js:         LIBS += $(WASM_LINK_GL2)
@@ -201,14 +200,12 @@ $(OUT)/webgpu.js:        LIBS += -s USE_WEBGPU=1
 
 $(OUT)/icons.exe:      LIBS += $(LIBM)
 $(OUT)/gamepad.exe:    LIBS += $(LIBM)
-$(OUT)/silk.exe:       LIBS += $(LIBM)
 $(OUT)/camera.exe:     LIBS += $(LIBM)
 $(OUT)/portableGL.exe: LIBS += $(LIBM)
 $(OUT)/gears.exe:      LIBS += $(LIBM)
 
 $(OUT)/icons:       LIBS += $(LIBM)
 $(OUT)/gamepad:     LIBS += $(LIBM)
-$(OUT)/silk:        LIBS += $(LIBM)
 $(OUT)/camera:      LIBS += $(LIBM)
 $(OUT)/portableGL:  LIBS += $(LIBM)
 $(OUT)/egl:         LIBS += -lEGL
@@ -263,10 +260,6 @@ endif
 
 ifneq (,$(filter $(CC),gcc g++))
 	EVERYTHING += gears
-endif
-
-ifeq ($(CPEEPEE),0)
-	EVERYTHING += silk
 endif
 
 ifeq ($(DETECTED_OS),Darwin)

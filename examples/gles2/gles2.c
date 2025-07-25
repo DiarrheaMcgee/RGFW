@@ -27,9 +27,9 @@ GLuint load_shader(const char *shaderSource, GLenum type) {
 }
 
 int main(void) {
-	RGFW_setGLHint(RGFW_glMajor, 2);
-	RGFW_setGLHint(RGFW_glMinor, 0);
-	RGFW_setGLHint(RGFW_glProfile, RGFW_glES);
+	RGFW_setHint_OpenGL(RGFW_glMajor, 2);
+	RGFW_setHint_OpenGL(RGFW_glMinor, 0);
+	RGFW_setHint_OpenGL(RGFW_glProfile, RGFW_glES);
 
 	RGFW_window* win = RGFW_createWindow("name", RGFW_RECT(0, 0, 500, 500), RGFW_windowCenter | RGFW_windowTransparent);
 
@@ -117,13 +117,14 @@ int main(void) {
 
 
     while (!RGFW_window_shouldClose(win)) {
-        RGFW_window_checkEvent(win);
+        RGFW_event event;
+        RGFW_window_checkEvent(win, &event);
 
         glClear(GL_COLOR_BUFFER_BIT);
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-        RGFW_window_swapBuffers(win);
+        RGFW_window_swapBuffers_OpenGL(win);
     }
 
     RGFW_window_close(win);
