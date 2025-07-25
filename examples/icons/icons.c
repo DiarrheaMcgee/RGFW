@@ -12,20 +12,22 @@ int main(void) {
     RGFW_window* win = RGFW_createWindow("RGFW icons", RGFW_RECT(0, 0, 600, 400), RGFW_windowCenter | RGFW_windowNoResize);
 
     unsigned char* icon = stbi_load("logo.png", &w, &h, &c, 0);
-    RGFW_mouse* mouse = RGFW_loadMouse(icon, RGFW_AREA(w, h), c);
-    
-    RGFW_window_setIconEx(win, base_icon, RGFW_AREA(3, 3), c, RGFW_iconWindow);
-    RGFW_window_setIconEx(win, icon, RGFW_AREA(w, h), c, RGFW_iconTaskbar);
-    
+    RGFW_mouse* mouse = RGFW_loadMouse(RGFW_IMAGE(icon, RGFW_AREA(w, h), RGFW_formatRGB8));
+
+    RGFW_window_setIconEx(win, RGFW_IMAGE(base_icon, RGFW_AREA(3, 3), RGFW_formatRGB8), RGFW_iconWindow);
+    RGFW_window_setIconEx(win, RGFW_IMAGE(icon, RGFW_AREA(w, h), RGFW_formatRGB8), RGFW_iconTaskbar);
+
     RGFW_window_setMouse(win, mouse);
 
+    RGFW_event event;
+
     while (RGFW_window_shouldClose(win) == RGFW_FALSE) {
-        while (RGFW_window_checkEvent(win) && win->event.type != RGFW_quit);
-        
+        while (RGFW_window_checkEvent(win, &event) && event.type != RGFW_quit);
+
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        RGFW_window_swapBuffers(win);
+        RGFW_window_swapBuffers_OpenGL(win);
     }
 
     RGFW_freeMouse(mouse);
