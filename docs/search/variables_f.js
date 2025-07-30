@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['timeroffset_0',['timerOffset',['../structRGFW__info.html#a5b270c9f8f60f7cf7cc40441968d9f59',1,'RGFW_info']]],
-  ['type_1',['type',['../structRGFW__event.html#ab309d573101fed3b9137b3e42f408ce0',1,'RGFW_event']]]
+  ['w_0',['w',['../structRGFW__rect.html#ae9b18887b7389dc05283e4e54881b801',1,'RGFW_rect::w()'],['../structRGFW__area.html#ad28ec4f8e78910b9ae7354aeb0a5bc9a',1,'RGFW_area::w()']]],
+  ['win_1',['win',['../structRGFW__debugContext.html#aefeac2fb81dbf0a0ff12f80bc4acb778',1,'RGFW_debugContext']]]
 ];
