@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['w_0',['w',['../structRGFW__rect.html#ae9b18887b7389dc05283e4e54881b801',1,'RGFW_rect::w()'],['../structRGFW__area.html#ad28ec4f8e78910b9ae7354aeb0a5bc9a',1,'RGFW_area::w()']]],
-  ['win_1',['win',['../structRGFW__debugContext.html#aefeac2fb81dbf0a0ff12f80bc4acb778',1,'RGFW_debugContext']]],
-  ['window_5fmanagement_2',['Window_management',['../group__Window__management.html',1,'']]]
+  ['y_0',['y',['../structRGFW__monitor.html#aefd61dab62b425ed88219f79894ed12a',1,'RGFW_monitor::y()'],['../structRGFW__mousePosEvent.html#a8eb45a631d62b8ff0ffc8ae16484488b',1,'RGFW_mousePosEvent::y()'],['../structRGFW__dragEvent.html#a9e1c79d430db3d97c90f38f0e85cdeda',1,'RGFW_dragEvent::y()'],['../structRGFW__scaleUpdatedEvent.html#a8b8453aa5bb44a6201648e453e21f7ce',1,'RGFW_scaleUpdatedEvent::y()']]]
 ];

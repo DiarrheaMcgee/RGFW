@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['_5fwin_0',['_win',['../structRGFW__event.html#a89fe817c101d890a13806709d1891c75',1,'RGFW_event']]]
+  ['blue_0',['blue',['../structRGFW__monitorMode.html#a59c089b8e8fb6a5945cffbdda85d9e72',1,'RGFW_monitorMode']]],
+  ['button_1',['button',['../unionRGFW__event.html#ab0e757ad7fbe82deb6e50b46b290efc8',1,'RGFW_event']]]
 ];

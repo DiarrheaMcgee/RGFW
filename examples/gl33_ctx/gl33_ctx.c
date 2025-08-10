@@ -1,3 +1,5 @@
+#define GL_SILENCE_DEPRECATION
+#define RGFW_OPENGL
 #define RGFW_IMPLEMENTATION
 #include "RGFW.h"
 
@@ -10,11 +12,18 @@
 #endif
 
 int main(void) {
-    RGFW_setHint_OpenGL(RGFW_glMinor, 3);
-    RGFW_setHint_OpenGL(RGFW_glMajor, 3);
-    RGFW_setHint_OpenGL(RGFW_glProfile, RGFW_glCore);
+    RGFW_glHints* hints = RGFW_getGlobalHints_OpenGL();
+    hints->major = 3;
+    hints->minor = 3;
+    RGFW_setGlobalHints_OpenGL(hints);
 
-    RGFW_window* win = RGFW_createWindow("a window", RGFW_RECT(0, 0, 800, 600), RGFW_windowCenter | RGFW_windowNoResize);
+    /* hide by default until the window is ready to show*/
+    RGFW_window* win = RGFW_createWindow("a window", 0, 0, 800, 600, RGFW_windowCenter | RGFW_windowNoResize | RGFW_windowHide);
+    RGFW_window_createContext_OpenGL(win, hints);
+
+    RGFW_window_show(win);
+
+    RGFW_window_setExitKey(win, RGFW_escape);
 
     const GLubyte *version = glGetString(GL_VERSION);
     printf("OpenGL Version: %s\n", version);

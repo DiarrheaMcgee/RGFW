@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['callbacks_0',['Callbacks',['../group__Callbacks.html',1,'']]],
-  ['clipboard_1',['Clipboard',['../group__Clipboard.html',1,'']]],
-  ['conventions_2emd_2',['CONVENTIONS.md',['../CONVENTIONS_8md.html',1,'']]]
+  ['files_0',['files',['../structRGFW__dropEvent.html#a244712c01f0c989559a2e48b64d00562',1,'RGFW_dropEvent']]]
 ];
