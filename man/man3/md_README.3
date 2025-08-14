@@ -1,4 +1,4 @@
-.TH "md_README" 3 "Mon Aug 11 2025" "RGFW" \" -*- nroff -*-
+.TH "md_README" 3 "Thu Aug 14 2025" "RGFW" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -11,40 +11,42 @@ md_README \- Riley's General Framework for Windowing
 .PP
 \fC\fP.SH "About"
 .PP
-RGFW does/is
+RGFW:
 .PP
 .IP "\(bu" 2
-is an stb-style single headerfile and is very portable (written in C99 in mind)
+\fBis\fP an stb-style single headerfile and is very portable
 .IP "\(bu" 2
-has a C89 compatible API on going changes to make the implementation more C89 friendly
+\fBis\fP primarly written in C99 in mind
 .IP "\(bu" 2
-is comparable to GLFW or aspects of SDL but it's leading motive is to be a flexible and lightweight windowing library
+\fBhas\fP a C89 compatible API on going changes to make the implementation more C89 friendly
 .IP "\(bu" 2
-is very small compared to other libraries
+\fBis\fP comparable to GLFW or aspects of SDL but it's leading motive is to be a flexible and lightweight windowing library
 .IP "\(bu" 2
-is a general framework and can be used for games, apps or tools
+\fBis\fP a very small compared to other libraries
 .IP "\(bu" 2
-only depends on system API libraries, Winapi, X11, Cocoa, etc \fBNO\fP dependencies
+\fBis\fP a general framework and can be used for games, apps or tools
 .IP "\(bu" 2
-help you create a window with a graphics context (OpenGL, Vulkan, WebGPU, Metal, or DirectX) and manage the window and its events only with a few function calls
+\fBdoes\fP only depend on system API libraries, Winapi, X11, Cocoa, etc \fBNO\fP dependencies
 .IP "\(bu" 2
-is customizable, you enable or disable features
+\fBdoes\fP help you create a window with a graphics context (OpenGL, Vulkan, WebGPU, Metal, or DirectX) and manage the window and its events only with a few function calls
 .IP "\(bu" 2
-works with X11 (UNIX), Wayland (\fIexperimental\fP) (LINUX), Cocoa (MacOS), Emscripten (WASM) and WinAPI (tested on windows \fIXP\fP, 10, 11, reactOS and has limited 9x support)
+\fBis\fP customizable, you enable or disable features
 .IP "\(bu" 2
-is RGFW is multi-paradigm, with a flexible event system, including multiple ways of handling events (callbacks, queue, state lookups)
+\fBdoes\fP work with X11 (UNIX), Wayland (\fIexperimental\fP) (LINUX), Cocoa (MacOS), Emscripten (WASM) and WinAPI (tested on windows \fIXP\fP, 10, 11, reactOS and has limited 9x support)
 .IP "\(bu" 2
-includes a large number of examples for learning RGFW
+\fBis\fP multi-paradigm, with a flexible event system, including multiple ways of handling events (callbacks, queue, state lookups)
+.IP "\(bu" 2
+\fBdoes\fP include a large number of examples for learning RGFW
 .PP
 .PP
-RGFW does/is not
+RGFW:
 .PP
 .IP "\(bu" 2
-Handle any rendering for you (other than creating your graphics context)
+does \fBnot\fP handle any rendering for you (other than creating your graphics context)
 .IP "\(bu" 2
-an OpenGL focused library, RGFW can be used with ANY graphics API
+is \fBnot\fP an OpenGL focused library, RGFW can be used with ANY graphics API
 .IP "\(bu" 2
-do anything above the bare minimum in terms of functionality
+does \fBnot\fP do anything above the bare minimum in terms of functionality
 .PP
 .PP
 There is a Makefile including for compiling th examples\&. NOTE: \fCWAYLAND=1\fP OR can be defined to compile for wayland\&. \fCWAYLAND_X11=1\fP can be used instead if you want examples to fallback to X11 if a Wayland display is not found\&. This adds \fC#define RGFW_WAYLAND\fP in the implementation (or defines \fCRGFW_WAYLAND\fP AND \fCRGFW_X11\fP)
@@ -93,7 +95,7 @@ int main() {
             }
 
             // or use the existing functions
-            if (RGFW_isMousePressed(win, RGFW_mouseRight)) {
+            if (RGFW_isMousePressed(RGFW_mouseRight)) {
                 printf("The right mouse button was clicked at x: %d, y: %d\n", event\&.mouse\&.x, event\&.mouse\&.y);
             }
         }
