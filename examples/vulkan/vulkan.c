@@ -500,11 +500,13 @@ int main(void)
 		vk.queue_index_count = queue_families.queue_index_count;
 
 		VkDeviceQueueCreateInfo queues[3];
+		float priorities[3];
 		memset(queues, 0, sizeof(VkDeviceQueueCreateInfo) * 3);
 		for (int i = 0; i < 3; i++) {
+			priorities[i] = 1.0f;
 			queues[i].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 			queues[i].queueCount = 1;
-			queues[i].pQueuePriorities = (float[]){1.0f};
+			queues[i].pQueuePriorities = &priorities[i];
 			queues[i].queueFamilyIndex = vk.queues.u[i];
 		}
 
@@ -698,7 +700,7 @@ int main(void)
 
 	{
 		size_t size = 0;
-		char *buf = NULL;
+		uint8_t *buf = NULL;
 		int skipped_texture = 0;
 		FILE *f = fopen("./lonic.raw", "r");
 		if (f == NULL)
@@ -707,9 +709,10 @@ int main(void)
 			f = fopen("./examples/vulkan/lonic.raw", "r");
 		if (f == NULL) {
 			printf("./lonic.raw not found (skipping texture)\n");
-			buf = (char[4]){
-				0xFF, 0xFF, 0xFF, 0xFF,
+			static uint8_t fallback[4] = {
+				255, 255, 255, 255
 			};
+			buf = fallback;
 			skipped_texture = 1;
 			size = 4;
 		}
@@ -717,7 +720,7 @@ int main(void)
 			fseek(f, 0, SEEK_END);
 			size = ftell(f);
 			fseek(f, 0, SEEK_SET);
-			buf = malloc(size);
+			buf = (uint8_t *)malloc(size);
 			size_t b = 0;
 			while (b < size)
 				b += fread(buf, 1, size, f);
@@ -950,7 +953,7 @@ int main(void)
 		fragment_info.pCode = frag_code;
 
 		VkPipelineShaderStageCreateInfo stages[2];
-		memset(stages, 0, sizeof(VkPipelineShaderStageCreateInfo));
+		memset(stages, 0, sizeof(VkPipelineShaderStageCreateInfo) * 2);
 		stages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 		stages[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
 		stages[0].pName = "main";
@@ -1016,10 +1019,11 @@ int main(void)
 		memset(&dynamic_state, 0, sizeof(VkPipelineDynamicStateCreateInfo));
 		dynamic_state.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
 		dynamic_state.dynamicStateCount = 2;
-		dynamic_state.pDynamicStates = (VkDynamicState[]) {
+		VkDynamicState dynamic_states[2] = {
 			VK_DYNAMIC_STATE_VIEWPORT,
 			VK_DYNAMIC_STATE_SCISSOR
 		};
+		dynamic_state.pDynamicStates = dynamic_states;
 
 		VkPushConstantRange push_constant_range;
 		memset(&push_constant_range, 0, sizeof(VkPushConstantRange));
