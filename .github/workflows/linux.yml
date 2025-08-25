@@ -72,12 +72,12 @@ jobs:
 
     - name: test C++
       run: |
-        make CC=g++ NO_VULKAN=1
+        make CC=g++
       if: matrix.bits == 64
 
     - name: test Zig
       run: |
-        make CC="zig cc" NO_VULKAN=1
+        make CC="zig cc"
       if: matrix.bits == 64
 
     - name: Build Library
