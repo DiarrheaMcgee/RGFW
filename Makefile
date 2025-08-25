@@ -94,6 +94,10 @@ ifeq (,$(filter $(CC),x86_64-w64-mingw32-gcc i686-w64-mingw32-gcc x86_64-w64-min
 
 	ifeq (,$(filter $(detected_OS),Linux Darwin NetBSD))
 		detected_OS := windows
+		ifneq (,$(VULKAN_SDK))
+			@echo "VULKAN_SDK not set so vulkan will be disabled"
+			NO_VULKAN = 1
+		endif
 	endif
 else
 	OS_DIR = /
