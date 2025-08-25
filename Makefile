@@ -61,11 +61,7 @@ ifeq (,$(filter $(CC),x86_64-w64-mingw32-gcc i686-w64-mingw32-gcc x86_64-w64-min
 			LIBS =
 		endif
 
-		ifneq (,$(VULKAN_SDK))
-			VULKAN_LIBS = -I$(VULKAN_SDK)/include -L$(VULKAN_SDK)/lib -lX11 -lXrandr -ldl -lpthread -lvulkan
-		else
-			VULKAN_LIBS = -lX11 -lXrandr -ldl -lpthread -lvulkan
-		endif
+		VULKAN_LIBS = -lX11 -lXrandr -ldl -lpthread -lvulkan
 		EXT =
 		LIB_EXT = .so
 		OS_DIR = /
@@ -78,11 +74,7 @@ ifeq (,$(filter $(CC),x86_64-w64-mingw32-gcc i686-w64-mingw32-gcc x86_64-w64-min
 		LINK_GL1 = -lGL
 		CUSTOM_CFLAGS += -I/usr/pkg/include -I/usr/X11R7/include -Wl,-R/usr/pkg/lib -Wl,-R/usr/X11R7/lib -L/usr/pkg/lib -L/usr/X11R7/lib
     	LIBS := $(CUSTOM_CFLAGS) -lXrandr -lX11 -lpthread
-		ifneq (,$(VULKAN_SDK))
-			VULKAN_LIBS = -lX11 -lXrandr -lpthread -I$(VULKAN_SDK)/include -L$(VULKAN_SDK)/lib
-		else
-			VULKAN_LIBS = -lX11 -lXrandr -lpthread
-		endif
+		VULKAN_LIBS = -lX11 -lXrandr -lpthread
 		EXT =
 		LIB_EXT = .so
 		OS_DIR = /
@@ -100,7 +92,7 @@ else
 endif
 
 ifeq ($(WAYLAND),1)
-	#NO_VULKAN = 1
+	NO_VULKAN = 1
 	NO_GLES = 0
 	NO_EGL = 0
 	NO_OSMESA ?= 0
@@ -155,9 +147,6 @@ endif
 
 ifneq (,$(filter $(detected_OS), windows Windows_NT))
 	NO_OSMESA ?= 1
-	ifneq (,$(VULKAN_SDK))
-		NO_VULKAN = 1
-	endif
 endif
 
 EXAMPLE_OUTPUTS = \
@@ -232,18 +221,12 @@ else
 	@echo osmesa has been disabled
 endif
 
-examples/vulkan/vert.h: examples/vulkan/vert.vert
-ifneq ($(NO_VULKAN), 1)
-	glslangValidator -V examples$(OS_DIR)vulkan$(OS_DIR)vert.vert -o examples$(OS_DIR)vulkan$(OS_DIR)vert.h --vn vert_code
-endif
 
-examples/vulkan/frag.h: examples/vulkan/frag.frag
+examples/vulkan/vulkan: examples/vulkan/vulkan.c RGFW.h
 ifneq ($(NO_VULKAN), 1)
-	glslangValidator -V examples$(OS_DIR)vulkan$(OS_DIR)frag.frag -o examples$(OS_DIR)vulkan$(OS_DIR)frag.h --vn frag_code
-endif
+	glslangValidator -V examples/vulkan/vert.vert -o examples/vulkan/vert.h --vn vert_code
+	glslangValidator -V examples/vulkan/frag.frag -o examples/vulkan/frag.h --vn frag_code
 
-examples/vulkan/vulkan: examples/vulkan/vulkan.c examples/vulkan/vert.h examples/vulkan/frag.h RGFW.h
-ifneq ($(NO_VULKAN), 1)
 	$(CC)  $(CFLAGS) -I. -Iexamples/vulkan $< -lm $(VULKAN_LIBS) -o $@
 else
 	@echo vulkan has been disabled
@@ -409,12 +392,7 @@ else
 endif
 
 clean:
-	rm -f *.o *.obj *.dll .dylib *.a *.so $(EXAMPLE_OUTPUTS) $(EXAMPLE_OUTPUTS_CUSTOM) \
-		.$(OS_DIR)examples$(OS_DIR)*$(OS_DIR)*.exe \
-		.$(OS_DIR)examples$(OS_DIR)*$(OS_DIR)*.js \
-		.$(OS_DIR)examples$(OS_DIR)*$(OS_DIR)*.wasm \
-		.$(OS_DIR)examples$(OS_DIR)vulkan$(OS_DIR)vert.h \
-		.$(OS_DIR)examples$(OS_DIR)vulkan$(OS_DIR)frag.h
+	rm -f *.o *.obj *.dll .dylib *.a *.so $(EXAMPLE_OUTPUTS) $(EXAMPLE_OUTPUTS_CUSTOM) .$(OS_DIR)examples$(OS_DIR)*$(OS_DIR)*.exe .$(OS_DIR)examples$(OS_DIR)*$(OS_DIR)*.js .$(OS_DIR)examples$(OS_DIR)*$(OS_DIR)*.wasm .$(OS_DIR)examples$(OS_DIR)vulkan$(OS_DIR)*.h
 
 
 .PHONY: all examples clean
