@@ -221,12 +221,18 @@ else
 	@echo osmesa has been disabled
 endif
 
-
-examples/vulkan/vulkan: examples/vulkan/vulkan.c RGFW.h
+examples/vulkan/vert.h: examples/vulkan/vert.vert
 ifneq ($(NO_VULKAN), 1)
 	glslangValidator -V examples/vulkan/vert.vert -o examples/vulkan/vert.h --vn vert_code
-	glslangValidator -V examples/vulkan/frag.frag -o examples/vulkan/frag.h --vn frag_code
+endif
 
+examples/vulkan/frag.h: examples/vulkan/frag.frag
+ifneq ($(NO_VULKAN), 1)
+	glslangValidator -V examples/vulkan/frag.frag -o examples/vulkan/frag.h --vn frag_code
+endif
+
+examples/vulkan/vulkan: examples/vulkan/vulkan.c examples/vulkan/vert.h examples/vulkan/frag.h RGFW.h
+ifneq ($(NO_VULKAN), 1)
 	$(CC)  $(CFLAGS) -I. -Iexamples/vulkan $< -lm $(VULKAN_LIBS) -o $@
 else
 	@echo vulkan has been disabled
@@ -392,7 +398,12 @@ else
 endif
 
 clean:
-	rm -f *.o *.obj *.dll .dylib *.a *.so $(EXAMPLE_OUTPUTS) $(EXAMPLE_OUTPUTS_CUSTOM) .$(OS_DIR)examples$(OS_DIR)*$(OS_DIR)*.exe .$(OS_DIR)examples$(OS_DIR)*$(OS_DIR)*.js .$(OS_DIR)examples$(OS_DIR)*$(OS_DIR)*.wasm .$(OS_DIR)examples$(OS_DIR)vulkan$(OS_DIR)*.h
+	rm -f *.o *.obj *.dll .dylib *.a *.so $(EXAMPLE_OUTPUTS) $(EXAMPLE_OUTPUTS_CUSTOM) \
+		.$(OS_DIR)examples$(OS_DIR)*$(OS_DIR)*.exe \
+		.$(OS_DIR)examples$(OS_DIR)*$(OS_DIR)*.js \
+		.$(OS_DIR)examples$(OS_DIR)*$(OS_DIR)*.wasm \
+		.$(OS_DIR)examples$(OS_DIR)vulkan$(OS_DIR)vert.h \
+		.$(OS_DIR)examples$(OS_DIR)vulkan$(OS_DIR)frag.h
 
 
 .PHONY: all examples clean
