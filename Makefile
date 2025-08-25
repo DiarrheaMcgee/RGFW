@@ -156,7 +156,6 @@ endif
 ifneq (,$(filter $(detected_OS), windows Windows_NT))
 	NO_OSMESA ?= 1
 	ifneq (,$(VULKAN_SDK))
-		@echo "VULKAN_SDK not set so vulkan will be disabled"
 		NO_VULKAN = 1
 	endif
 endif
