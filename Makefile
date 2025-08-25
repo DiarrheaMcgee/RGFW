@@ -92,7 +92,7 @@ else
 endif
 
 ifeq ($(WAYLAND),1)
-	NO_VULKAN = 1
+	#NO_VULKAN = 1
 	NO_GLES = 0
 	NO_EGL = 0
 	NO_OSMESA ?= 0
