@@ -62,9 +62,10 @@ ifeq (,$(filter $(CC),x86_64-w64-mingw32-gcc i686-w64-mingw32-gcc x86_64-w64-min
 		endif
 
 		ifneq (,$(VULKAN_SDK))
-			VULKAN_LIBS += -I$(VULKAN_SDK)/include -L$(VULKAN_SDK)/lib
+			VULKAN_LIBS = -I$(VULKAN_SDK)/include -L$(VULKAN_SDK)/lib -lX11 -lXrandr -ldl -lpthread -lvulkan
+		else
+			VULKAN_LIBS = -lX11 -lXrandr -ldl -lpthread -lvulkan
 		endif
-		VULKAN_LIBS = -lX11 -lXrandr -ldl -lpthread -lvulkan
 		EXT =
 		LIB_EXT = .so
 		OS_DIR = /
@@ -78,9 +79,10 @@ ifeq (,$(filter $(CC),x86_64-w64-mingw32-gcc i686-w64-mingw32-gcc x86_64-w64-min
 		CUSTOM_CFLAGS += -I/usr/pkg/include -I/usr/X11R7/include -Wl,-R/usr/pkg/lib -Wl,-R/usr/X11R7/lib -L/usr/pkg/lib -L/usr/X11R7/lib
     	LIBS := $(CUSTOM_CFLAGS) -lXrandr -lX11 -lpthread
 		ifneq (,$(VULKAN_SDK))
-			VULKAN_LIBS += -I$(VULKAN_SDK)/include -L$(VULKAN_SDK)/lib
+			VULKAN_LIBS = -lX11 -lXrandr -lpthread -I$(VULKAN_SDK)/include -L$(VULKAN_SDK)/lib
+		else
+			VULKAN_LIBS = -lX11 -lXrandr -lpthread
 		endif
-		VULKAN_LIBS = -lX11 -lXrandr -lpthread
 		EXT =
 		LIB_EXT = .so
 		OS_DIR = /
