@@ -235,12 +235,12 @@ endif
 
 examples/vulkan/vert.h: examples/vulkan/vert.vert
 ifneq ($(NO_VULKAN), 1)
-	glslangValidator -V examples/vulkan/vert.vert -o examples/vulkan/vert.h --vn vert_code
+	glslangValidator -V examples$(OS_DIR)vulkan$(OS_DIR)vert.vert -o examples$(OS_DIR)vulkan$(OS_DIR)vert.h --vn vert_code
 endif
 
 examples/vulkan/frag.h: examples/vulkan/frag.frag
 ifneq ($(NO_VULKAN), 1)
-	glslangValidator -V examples/vulkan/frag.frag -o examples/vulkan/frag.h --vn frag_code
+	glslangValidator -V examples$(OS_DIR)vulkan$(OS_DIR)frag.frag -o examples$(OS_DIR)vulkan$(OS_DIR)frag.h --vn frag_code
 endif
 
 examples/vulkan/vulkan: examples/vulkan/vulkan.c examples/vulkan/vert.h examples/vulkan/frag.h RGFW.h
