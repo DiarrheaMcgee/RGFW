@@ -11,7 +11,8 @@ AR ?= ar
 # used for compiling RGFW.o
 CUSTOM_CFLAGS =
 # used for the examples
-CFLAGS ?= -g
+CFLAGS =
+CFLAGS += -g3
 
 DX11_LIBS = -static -lgdi32 -ldxgi -ld3d11 -luuid -ld3dcompiler
 VULKAN_LIBS = -lgdi32 -I $(VULKAN_SDK)\Include -L $(VULKAN_SDK)\Lib -lvulkan-1
@@ -31,6 +32,10 @@ NO_EGL = 1
 detected_OS = windows
 
 OBJ_FILE = .o
+
+ifeq ($(WAYLAND_ONLY), 1)
+	WAYLAND = 1
+endif
 
 ifeq ($(WAYLAND_X11), 1)
 	WAYLAND = 1
@@ -96,7 +101,7 @@ ifeq ($(WAYLAND),1)
 	NO_GLES = 0
 	NO_EGL = 0
 	NO_OSMESA ?= 0
-	LIBS += -D RGFW_WAYLAND relative-pointer-unstable-v1-client-protocol.c xdg-decoration-unstable-v1.c xdg-shell.c -lwayland-cursor -lwayland-client -lxkbcommon  -lwayland-egl -lEGL
+	LIBS += -D RGFW_WAYLAND relative-pointer-unstable-v1.c pointer-constraints-unstable-v1.c xdg-toplevel-icon-v1.c xdg-output-unstable-v1.c xdg-decoration-unstable-v1.c xdg-shell.c -lwayland-cursor -lwayland-client -lxkbcommon  -lwayland-egl -lEGL
 	LINK_GL1 = -lEGL -lGL
 
 	# LIBS += -ldecor-0
@@ -134,12 +139,11 @@ else ifneq (,$(filter $(CC),emcc em++))
 	DX11_LIBS =
 else ifeq (,$(filter $(CC),g++ clang++ em++))
 	LIBS += -std=c99
-	WARNINGS = -Werror -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wnested-externs -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
-
-	WARNINGS = -Wall -Werror -Wextra -Wstrict-prototypes -Wold-style-definition -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wnested-externs -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
+	WARNINGS = -Wall -Werror -Wdouble-promotion -Wmissing-prototypes -Wextra -Wstrict-prototypes -Wold-style-definition -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wnested-externs -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
 else
-	WARNINGS = -Wall -Werror -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
+	WARNINGS = -Wall -Werror -Wdouble-promotion -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
 
+	NO_VULKAN = 1
 	ifeq ($(detected_OS),Darwin)
 		WARNINGS += -Wno-deprecated -Wno-unknown-warning-option -Wno-pedantic
 	endif
@@ -147,6 +151,11 @@ endif
 
 ifneq (,$(filter $(detected_OS), windows Windows_NT))
 	NO_OSMESA ?= 1
+endif
+
+ifeq ($(WAYLAND_X11), 1)
+	# lazy fix (no -Wmissing-prototypes for wayland X11)
+	WARNINGS = -Wall -Werror -Wdouble-promotion -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wpointer-arith -Wvla -Wcast-align -Wstrict-overflow -Wstrict-aliasing -Wredundant-decls -Winit-self -Wmissing-noreturn
 endif
 
 EXAMPLE_OUTPUTS = \
@@ -174,11 +183,12 @@ EXAMPLE_OUTPUTS_CUSTOM = \
 	examples/gles2/gles2 \
 	examples/egl/egl \
 	examples/osmesa_demo/osmesa_demo \
-	examples/vulkan/vulkan \
+	examples/vk10/vk10 \
 	examples/dx11/dx11 \
 	examples/metal/metal \
 	examples/minimal_links/minimal_links \
-	examples/gears/gears
+	examples/gears/gears \
+	examples/srgb/srgb
 
 all: xdg-shell.c $(EXAMPLE_OUTPUTS) $(EXAMPLE_OUTPUTS_CUSTOM) libRGFW$(LIB_EXT) libRGFW.a
 
@@ -190,6 +200,9 @@ ifneq (,$(filter $(CC),emcc em++))
 else
 	$(CC) $(CFLAGS) -I. $< $(LINK_GL1) $(LIBS) -lm $($)  -o $@$(EXT)
 endif
+
+examples/srgb/srgb: examples/srgb/srgb.c RGFW.h
+	$(CC) $(CFLAGS) -I. $< $(LINK_GL1) $(LIBS) -lm $($)  -o $@$(EXT)
 
 examples/portableGL/pgl: examples/portableGL/pgl.c RGFW.h
 ifeq (,$(filter $(CC),emcc em++))
@@ -222,12 +235,12 @@ else
 endif
 
 
-examples/vulkan/vulkan: examples/vulkan/vulkan.c RGFW.h
+examples/vk10/vk10: examples/vk10/vk10.c examples/vk10/vkinit.h RGFW.h
 ifneq ($(NO_VULKAN), 1)
-	glslangValidator -V examples/vulkan/vert.vert -o examples/vulkan/vert.h --vn vert_code
-	glslangValidator -V examples/vulkan/frag.frag -o examples/vulkan/frag.h --vn frag_code
+	glslangValidator -V examples/vk10/shaders/vert.vert -o examples/vk10/shaders/vert.h --vn vert_code
+	glslangValidator -V examples/vk10/shaders/frag.frag -o examples/vk10/shaders/frag.h --vn frag_code
 
-	$(CC)  $(CFLAGS) -I. -Iexamples/vulkan $< -lm $(VULKAN_LIBS) -o $@
+	$(CC)  $(CFLAGS) -I. $< $(VULKAN_LIBS) -o $@
 else
 	@echo vulkan has been disabled
 endif
@@ -314,11 +327,11 @@ examples/first-person-camera/camera: examples/first-person-camera/camera.c RGFW.
 
 examples/gl33/gl33: examples/gl33/gl33.c RGFW.h
 ifeq ($(WAYLAND), 1)
-	$(CC) $(CFLAGS) -I. $< $(LIBS) $(LINK_GL1) -lEGL -lwayland-egl -o $@$(EXT)
+	$(CC) $(CFLAGS) $(WARNINGS) -I. $< $(LIBS) $(LINK_GL1) -lEGL -lwayland-egl -o $@$(EXT)
 else ifeq ($(detected_OS),NetBSD)
-	$(CC) $(CFLAGS) $(CFLAGS) -I. $<  -lXrandr -lpthread -o $@$(EXT)
+	$(CC) $(CFLAGS) $(WARNINGS) $(CFLAGS) -I. $<  -lXrandr -lpthread -o $@$(EXT)
 else ifeq ($(detected_OS),Linux)
-	$(CC) $(CFLAGS) -I. $<  -o $@$(EXT)
+	$(CC) $(CFLAGS) $(WARNINGS)  -I. $<  -o $@$(EXT)
 else ifeq ($(detected_OS),windows)
 	$(CC) $(CFLAGS) $(WARNINGS) -I. $< -lgdi32 -D UNICODE -o $@$(EXT)
 else ifeq ($(detected_OS),Darwin)
@@ -349,7 +362,7 @@ ifneq ($(NO_OSMESA), 1)
 		./examples/osmesa_demo/osmesa_demo$(EXT)
 endif
 ifneq ($(NO_VULKAN), 1)
-		./examples/vulkan/vulkan$(EXT)
+		./examples/vk10/vk10$(EXT)
 endif
 ifeq ($(detected_OS), windows)
 		./examples/dx11/dx11.exe
@@ -384,15 +397,21 @@ ifeq ($(WAYLAND),1)
 	wayland-scanner client-header /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml xdg-shell.h
 	wayland-scanner public-code /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml xdg-shell.c
 	wayland-scanner client-header /usr/share/wayland-protocols/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml xdg-decoration-unstable-v1.h
+	wayland-scanner public-code /usr/share/wayland-protocols/staging/xdg-toplevel-icon/xdg-toplevel-icon-v1.xml xdg-toplevel-icon-v1.c
+	wayland-scanner client-header /usr/share/wayland-protocols/staging/xdg-toplevel-icon/xdg-toplevel-icon-v1.xml xdg-toplevel-icon-v1.h
 	wayland-scanner public-code /usr/share/wayland-protocols/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml xdg-decoration-unstable-v1.c
-	wayland-scanner client-header /usr/share/wayland-protocols/unstable/relative-pointer/relative-pointer-unstable-v1.xml relative-pointer-unstable-v1-client-protocol.h
-	wayland-scanner client-header /usr/share/wayland-protocols/unstable/relative-pointer/relative-pointer-unstable-v1.xml relative-pointer-unstable-v1-client-protocol.c
+	wayland-scanner client-header /usr/share/wayland-protocols/unstable/relative-pointer/relative-pointer-unstable-v1.xml relative-pointer-unstable-v1.h
+	wayland-scanner public-code /usr/share/wayland-protocols/unstable/relative-pointer/relative-pointer-unstable-v1.xml relative-pointer-unstable-v1.c
+	wayland-scanner client-header /usr/share/wayland-protocols/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml pointer-constraints-unstable-v1.h
+	wayland-scanner public-code /usr/share/wayland-protocols/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml pointer-constraints-unstable-v1.c
+	wayland-scanner client-header /usr/share/wayland-protocols/unstable/xdg-output/xdg-output-unstable-v1.xml xdg-output-unstable-v1.h
+	wayland-scanner public-code /usr/share/wayland-protocols/unstable/xdg-output/xdg-output-unstable-v1.xml xdg-output-unstable-v1.c
 else
 
 endif
 
 clean:
-	rm -f *.o *.obj *.dll .dylib *.a *.so $(EXAMPLE_OUTPUTS) $(EXAMPLE_OUTPUTS_CUSTOM) .$(OS_DIR)examples$(OS_DIR)*$(OS_DIR)*.exe .$(OS_DIR)examples$(OS_DIR)*$(OS_DIR)*.js .$(OS_DIR)examples$(OS_DIR)*$(OS_DIR)*.wasm .$(OS_DIR)examples$(OS_DIR)vulkan$(OS_DIR)*.h
+	rm -f *.o *.obj *.dll .dylib *.a *.so $(EXAMPLE_OUTPUTS) $(EXAMPLE_OUTPUTS_CUSTOM)  .$(OS_DIR)examples$(OS_DIR)*$(OS_DIR)*.exe .$(OS_DIR)examples$(OS_DIR)*$(OS_DIR)*.js .$(OS_DIR)examples$(OS_DIR)*$(OS_DIR)*.wasm .$(OS_DIR)examples$(OS_DIR)vk10$(OS_DIR)shaders$(OS_DIR)*.h
 
 
 .PHONY: all examples clean

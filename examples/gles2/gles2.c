@@ -5,6 +5,7 @@
 
 #include <GLES2/gl2.h>
 
+#define RGFW_DEBUG
 #define GL_SILENCE_DEPRECATION
 #define RGFW_OPENGL
 #define RGFW_IMPLEMENTATION
@@ -31,7 +32,7 @@ GLuint load_shader(const char *shaderSource, GLenum type) {
 int main(void) {
     RGFW_glHints* hints = RGFW_getGlobalHints_OpenGL();
     hints->major = 2;
-    hints->minor = 2;
+    hints->minor = 0;
     hints->profile = RGFW_glES;
     RGFW_setGlobalHints_OpenGL(hints);
 
