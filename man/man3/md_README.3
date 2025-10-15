@@ -1,4 +1,4 @@
-.TH "md_README" 3 "Fri Sep 19 2025" "RGFW" \" -*- nroff -*-
+.TH "md_README" 3 "Wed Oct 15 2025" "RGFW" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -90,13 +90,16 @@ int main() {
             // you can either check the current event yourself
             if (event\&.type == RGFW_quit) break;
 
+            i32 mouseX, mouseY;
+            RGFW_window_getMouse(win, &mouseX, &mouseY);
+
             if (event\&.type == RGFW_mouseButtonPressed && event\&.button\&.value == RGFW_mouseLeft) {
-                printf("You clicked at x: %d, y: %d\n", event\&.mouse\&.x, event\&.mouse\&.y);
+                printf("You clicked at x: %d, y: %d\n", mouseX, mouseY);
             }
 
             // or use the existing functions
             if (RGFW_isMousePressed(RGFW_mouseRight)) {
-                printf("The right mouse button was clicked at x: %d, y: %d\n", event\&.mouse\&.x, event\&.mouse\&.y);
+                printf("The right mouse button was clicked at x: %d, y: %d\n", mouseX, mouseY);
             }
         }
 
