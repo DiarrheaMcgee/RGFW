@@ -5285,7 +5285,7 @@ RGFW_mouse* RGFW_FUNC(RGFW_loadMouse) (u8* data, i32 w, i32 h, RGFW_format forma
 
 	return (void*)cursor;
 #else
-	RGFW_UNUSED(img);
+	RGFW_UNUSED(data); RGFW_UNUSED(w); RGFW_UNUSED(h); RGFW_UNUSED(format);
 	return NULL;
 #endif
 }
@@ -6062,7 +6062,10 @@ void RGFW_deinitPlatform_X11(void) {
 		_RGFW->clipboard = NULL;
 	}
 
-    RGFW_freeMouse(_RGFW->hiddenMouse);
+	if (_RGFW->hiddenMouse) {
+		RGFW_freeMouse(_RGFW->hiddenMouse);
+		_RGFW->hiddenMouse = NULL;
+	}
 
     XDestroyWindow(_RGFW->display, (Drawable) _RGFW->helperWindow); /*!< close the window */
     XCloseDisplay(_RGFW->display); /*!< kill connection to the x server */
@@ -11783,7 +11786,7 @@ RGFW_window* RGFW_createWindowPlatform(const char* name, RGFW_windowFlags flags,
 	EM_ASM({
 		window.addEventListener("keydown",
 			(event) => {
-				var key = stringToNewUTF8(event.key.value); var code = stringToNewUTF8(event.code);
+				var key = stringToNewUTF8(event.key); var code = stringToNewUTF8(event.code);
 				Module._RGFW_handleKeyMods(event.getModifierState("CapsLock"), event.getModifierState("NumLock"), event.getModifierState("Control"), event.getModifierState("Alt"), event.getModifierState("Shift"), event.getModifierState("Meta"), event.getModifierState("ScrollLock"));
 				Module._RGFW_handleKeyEvent(key, code, 1);
 				_free(key); _free(code);
@@ -11791,7 +11794,7 @@ RGFW_window* RGFW_createWindowPlatform(const char* name, RGFW_windowFlags flags,
 		true);
 		window.addEventListener("keyup",
 			(event) => {
-				var key = stringToNewUTF8(event.key.value); var code = stringToNewUTF8(event.code);
+				var key = stringToNewUTF8(event.key); var code = stringToNewUTF8(event.code);
 				Module._RGFW_handleKeyMods(event.getModifierState("CapsLock"), event.getModifierState("NumLock"), event.getModifierState("Control"), event.getModifierState("Alt"), event.getModifierState("Shift"), event.getModifierState("Meta"), event.getModifierState("ScrollLock"));
 				Module._RGFW_handleKeyEvent(key, code, 0);
 				_free(key); _free(code);
