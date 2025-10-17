@@ -2739,10 +2739,10 @@ void RGFW_updateKeyModsEx(RGFW_window* win, RGFW_bool capital, RGFW_bool numlock
 
 void RGFW_updateKeyMods(RGFW_window* win, RGFW_bool capital, RGFW_bool numlock, RGFW_bool scroll) {
 	RGFW_updateKeyModsEx(win, capital, numlock,
-					RGFW_window_isKeyPressed(win, RGFW_controlL) || RGFW_window_isKeyPressed(win, RGFW_controlR),
-					RGFW_window_isKeyPressed(win, RGFW_altL) || RGFW_window_isKeyPressed(win, RGFW_altR),
-					RGFW_window_isKeyPressed(win, RGFW_shiftL) || RGFW_window_isKeyPressed(win, RGFW_shiftR),
-					RGFW_window_isKeyPressed(win, RGFW_superL) || RGFW_window_isKeyPressed(win, RGFW_superR),
+					RGFW_window_isKeyDown(win, RGFW_controlL) || RGFW_window_isKeyDown(win, RGFW_controlR),
+					RGFW_window_isKeyDown(win, RGFW_altL) || RGFW_window_isKeyDown(win, RGFW_altR),
+					RGFW_window_isKeyDown(win, RGFW_shiftL) || RGFW_window_isKeyDown(win, RGFW_shiftR),
+					RGFW_window_isKeyDown(win, RGFW_superL) || RGFW_window_isKeyDown(win, RGFW_superR),
 					scroll);
 }
 
@@ -2976,7 +2976,10 @@ RGFW_bool RGFW_extensionSupported_OpenGL(const char* extension, size_t len) {
 }
 
 void RGFW_window_makeCurrentWindow_OpenGL(RGFW_window* win) {
-    _RGFW->current = win;
+	if (win) {
+		_RGFW->current = win;
+	}
+
     RGFW_window_makeCurrentContext_OpenGL(win);
 }
 
@@ -7793,12 +7796,13 @@ LRESULT CALLBACK WndProcW(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			_RGFW->keyboard[event.key.value].prev = _RGFW->keyboard[event.key.value].current;
 			event.type = RGFW_keyReleased;
-			event.key.repeat = RGFW_window_isKeyPressed(win, event.key.value);
+			event.key.repeat = ((lParam & 0x40000000) != 0) || RGFW_window_isKeyDown(win, event.key.value);
 			_RGFW->keyboard[event.key.value].current = 0;
 
 			RGFW_updateKeyMods(win, (GetKeyState(VK_CAPITAL) & 0x0001), (GetKeyState(VK_NUMLOCK) & 0x0001), (GetKeyState(VK_SCROLL) & 0x0001));
+			event.key.mod = win->internal.mod;
 
-			RGFW_keyCallback(win, event.key.value, event.key.sym, event.key.repeat, win->internal.mod, 0);
+			RGFW_keyCallback(win, event.key.value, event.key.sym, event.key.mod, event.key.repeat,0);
 			break;
 		}
 		case WM_SYSKEYDOWN: case WM_KEYDOWN: {
@@ -7827,11 +7831,13 @@ LRESULT CALLBACK WndProcW(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			_RGFW->keyboard[event.key.value].prev = _RGFW->keyboard[event.key.value].current;
 			event.type = RGFW_keyPressed;
-			event.key.repeat = RGFW_window_isKeyPressed(win, event.key.value);
+			event.key.repeat = ((lParam & 0x40000000) != 0) || RGFW_window_isKeyDown(win, event.key.value);
 			_RGFW->keyboard[event.key.value].current = 1;
-			RGFW_updateKeyMods(win, (GetKeyState(VK_CAPITAL) & 0x0001), (GetKeyState(VK_NUMLOCK) & 0x0001), (GetKeyState(VK_SCROLL) & 0x0001));
 
-			RGFW_keyCallback(win, event.key.value, event.key.sym, win->internal.mod, event.key.repeat, 1);
+			RGFW_updateKeyMods(win, (GetKeyState(VK_CAPITAL) & 0x0001), (GetKeyState(VK_NUMLOCK) & 0x0001), (GetKeyState(VK_SCROLL) & 0x0001));
+			event.key.mod = win->internal.mod;
+
+			RGFW_keyCallback(win, event.key.value, event.key.sym, event.key.mod, event.key.repeat, 1);
 			break;
 		}
 		case WM_MOUSEMOVE: {
@@ -8953,7 +8959,7 @@ RGFW_ssize_t RGFW_readClipboardPtr(char* str, size_t strCapacity) {
 			if (textLen > 1)
 				wcstombs(str, wstr, (size_t)(textLen));
 
-			str[textLen] = '\0';
+			str[textLen - 1] = '\0';
 		}
 	}
 
@@ -9232,7 +9238,6 @@ void RGFW_window_deleteContextPtr_OpenGL(RGFW_window* win, RGFW_glContext* ctx) 
 }
 
 void RGFW_window_makeCurrentContext_OpenGL(RGFW_window* win) {
-	RGFW_ASSERT(win->src.ctx.native);
 	if (win == NULL)
 		wglMakeCurrent(NULL, NULL);
 	else
