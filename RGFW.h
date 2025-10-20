@@ -5946,7 +5946,7 @@ void RGFW_FUNC(RGFW_window_swapInterval_OpenGL) (RGFW_window* win, i32 swapInter
 		}
 	}
 
-	if (pfn != (PFNGLXSWAPINTERVALEXTPROC)1) {
+	if (pfn != (PFNGLXSWAPINTERVALEXTPROC)NULL) {
 		pfn(_RGFW->display, win->src.window, swapInterval);
 	}
 	else if (pfn2 != NULL) {
