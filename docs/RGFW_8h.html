@@ -79,8 +79,8 @@ $(function() {
   <div class="headertitle"><div class="title">RGFW.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;stdlib.h&gt;</code><br />
-<code>#include &lt;assert.h&gt;</code><br />
+<div class="textblock"><code>#include &lt;assert.h&gt;</code><br />
+<code>#include &lt;stdlib.h&gt;</code><br />
 <code>#include &lt;string.h&gt;</code><br />
 <code>#include &lt;stddef.h&gt;</code><br />
 <code>#include &lt;stdint.h&gt;</code><br />
@@ -125,6 +125,10 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
+<tr class="memitem:abaefc14a066ffd85ac8db9426f890665"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="RGFW_8h.html#abaefc14a066ffd85ac8db9426f890665">RGFW_ASSERT</a>&#160;&#160;&#160;assert</td></tr>
+<tr class="separator:abaefc14a066ffd85ac8db9426f890665"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2decf3c977508eea8d869ea6d621950"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="RGFW_8h.html#ac2decf3c977508eea8d869ea6d621950">RGFW_C89</a></td></tr>
+<tr class="separator:ac2decf3c977508eea8d869ea6d621950"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad8f1fa862ab1c9cc61db226b7fce5693"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="RGFW_8h.html#ad8f1fa862ab1c9cc61db226b7fce5693">RGFW_USERPTR</a>&#160;&#160;&#160;NULL</td></tr>
 <tr class="separator:ad8f1fa862ab1c9cc61db226b7fce5693"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac2c5e611731b038c9377999b4b2af64"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="RGFW_8h.html#aac2c5e611731b038c9377999b4b2af64">RGFW_UNUSED</a>(x)&#160;&#160;&#160;(void)(x)</td></tr>
@@ -137,8 +141,6 @@ Macros</h2></td></tr>
 <tr class="separator:a64f14d44f6a4bd65025e4886dc8f3fbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ac54dc00132bf4c6f760463ab5148dd"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="RGFW_8h.html#a2ac54dc00132bf4c6f760463ab5148dd">RGFW_FREE</a>&#160;&#160;&#160;free</td></tr>
 <tr class="separator:a2ac54dc00132bf4c6f760463ab5148dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abaefc14a066ffd85ac8db9426f890665"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="RGFW_8h.html#abaefc14a066ffd85ac8db9426f890665">RGFW_ASSERT</a>&#160;&#160;&#160;assert</td></tr>
-<tr class="separator:abaefc14a066ffd85ac8db9426f890665"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a50fa56c626929529f3b0711caecce288"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="RGFW_8h.html#a50fa56c626929529f3b0711caecce288">RGFW_MEMSET</a>(ptr,  value,  num)&#160;&#160;&#160;memset(ptr, value, num)</td></tr>
 <tr class="separator:a50fa56c626929529f3b0711caecce288"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aef87ec6dcdfa590cf3ccc9a7a2dd25eb"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="RGFW_8h.html#aef87ec6dcdfa590cf3ccc9a7a2dd25eb">RGFW_MEMCPY</a>(dist,  src,  len)&#160;&#160;&#160;memcpy(dist, src, len)</td></tr>
@@ -163,7 +165,7 @@ Macros</h2></td></tr>
 <tr class="separator:af3d151fddc5615b7e7e795ef2ede6595"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d0fadc4d22bb957b79db48ffabf09e9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="RGFW_8h.html#a5d0fadc4d22bb957b79db48ffabf09e9">RGFW_COCOA_FRAME_NAME</a>&#160;&#160;&#160;NULL</td></tr>
 <tr class="separator:a5d0fadc4d22bb957b79db48ffabf09e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abd148a2771096e4a671e32f51be8f69f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="RGFW_8h.html#abd148a2771096e4a671e32f51be8f69f">RGFWDEF</a>&#160;&#160;&#160;inline</td></tr>
+<tr class="memitem:abd148a2771096e4a671e32f51be8f69f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="RGFW_8h.html#abd148a2771096e4a671e32f51be8f69f">RGFWDEF</a>&#160;&#160;&#160;__inline</td></tr>
 <tr class="separator:abd148a2771096e4a671e32f51be8f69f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae8ceb9b5ca0a3bd4c747d97a803ab7cc"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="RGFW_8h.html#ae8ceb9b5ca0a3bd4c747d97a803ab7cc">RGFW_HEADER</a></td></tr>
 <tr class="separator:ae8ceb9b5ca0a3bd4c747d97a803ab7cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -677,15 +679,21 @@ Functions</h2></td></tr>
 <tr class="memitem:ga46e9ec7d9e23ed20b38a6046e1b93f49"><td class="memItemLeft" align="right" valign="top"><a class="el" href="RGFW_8h.html#abd148a2771096e4a671e32f51be8f69f">RGFWDEF</a> <a class="el" href="RGFW_8h.html#a5875a02d0e0e933b07afbe7b20941c0b">RGFW_bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Window__management.html#ga46e9ec7d9e23ed20b38a6046e1b93f49">RGFW_window_setMouseDefault</a> (<a class="el" href="RGFW_8h.html#a2520d2d7f43e5df60edeed92733c1de6">RGFW_window</a> *win)</td></tr>
 <tr class="memdesc:ga46e9ec7d9e23ed20b38a6046e1b93f49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the mouse to the default cursor icon.  <a href="group__Window__management.html#ga46e9ec7d9e23ed20b38a6046e1b93f49">More...</a><br /></td></tr>
 <tr class="separator:ga46e9ec7d9e23ed20b38a6046e1b93f49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf32b96982a99e822ad15e52569aed47c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="RGFW_8h.html#abd148a2771096e4a671e32f51be8f69f">RGFWDEF</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Window__management.html#gaf32b96982a99e822ad15e52569aed47c">RGFW_window_setRawMouseMode</a> (<a class="el" href="RGFW_8h.html#a2520d2d7f43e5df60edeed92733c1de6">RGFW_window</a> *win, <a class="el" href="RGFW_8h.html#a5875a02d0e0e933b07afbe7b20941c0b">RGFW_bool</a> state)</td></tr>
+<tr class="memdesc:gaf32b96982a99e822ad15e52569aed47c"><td class="mdescLeft">&#160;</td><td class="mdescRight">set (enable or disable) raw mouse mode, locking the cursor and using mouse raw input.  <a href="group__Window__management.html#gaf32b96982a99e822ad15e52569aed47c">More...</a><br /></td></tr>
+<tr class="separator:gaf32b96982a99e822ad15e52569aed47c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga48b81126302e8f2bfd8da9567e871f95"><td class="memItemLeft" align="right" valign="top"><a class="el" href="RGFW_8h.html#abd148a2771096e4a671e32f51be8f69f">RGFWDEF</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Window__management.html#ga48b81126302e8f2bfd8da9567e871f95">RGFW_window_holdMouse</a> (<a class="el" href="RGFW_8h.html#a2520d2d7f43e5df60edeed92733c1de6">RGFW_window</a> *win)</td></tr>
 <tr class="memdesc:ga48b81126302e8f2bfd8da9567e871f95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Locks the cursor to the center of the window.  <a href="group__Window__management.html#ga48b81126302e8f2bfd8da9567e871f95">More...</a><br /></td></tr>
 <tr class="separator:ga48b81126302e8f2bfd8da9567e871f95"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga375616fdd1d6084ff2732eb9ee8fd070"><td class="memItemLeft" align="right" valign="top"><a class="el" href="RGFW_8h.html#abd148a2771096e4a671e32f51be8f69f">RGFWDEF</a> <a class="el" href="RGFW_8h.html#a5875a02d0e0e933b07afbe7b20941c0b">RGFW_bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Window__management.html#ga375616fdd1d6084ff2732eb9ee8fd070">RGFW_window_isHoldingMouse</a> (<a class="el" href="RGFW_8h.html#a2520d2d7f43e5df60edeed92733c1de6">RGFW_window</a> *win)</td></tr>
-<tr class="memdesc:ga375616fdd1d6084ff2732eb9ee8fd070"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the mouse is currently held by RGFW.  <a href="group__Window__management.html#ga375616fdd1d6084ff2732eb9ee8fd070">More...</a><br /></td></tr>
-<tr class="separator:ga375616fdd1d6084ff2732eb9ee8fd070"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga04ad62da8d5a1239c544cfa9e1a8479e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="RGFW_8h.html#abd148a2771096e4a671e32f51be8f69f">RGFWDEF</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Window__management.html#ga04ad62da8d5a1239c544cfa9e1a8479e">RGFW_window_unholdMouse</a> (<a class="el" href="RGFW_8h.html#a2520d2d7f43e5df60edeed92733c1de6">RGFW_window</a> *win)</td></tr>
 <tr class="memdesc:ga04ad62da8d5a1239c544cfa9e1a8479e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases the mouse so it can move freely again.  <a href="group__Window__management.html#ga04ad62da8d5a1239c544cfa9e1a8479e">More...</a><br /></td></tr>
 <tr class="separator:ga04ad62da8d5a1239c544cfa9e1a8479e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga104e7f3e1c52ee973360b1a0f5b62c6f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="RGFW_8h.html#abd148a2771096e4a671e32f51be8f69f">RGFWDEF</a> <a class="el" href="RGFW_8h.html#a5875a02d0e0e933b07afbe7b20941c0b">RGFW_bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Window__management.html#ga104e7f3e1c52ee973360b1a0f5b62c6f">RGFW_window_isRawMouseMode</a> (<a class="el" href="RGFW_8h.html#a2520d2d7f43e5df60edeed92733c1de6">RGFW_window</a> *win)</td></tr>
+<tr class="memdesc:ga104e7f3e1c52ee973360b1a0f5b62c6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the mouse is currently held by RGFW.  <a href="group__Window__management.html#ga104e7f3e1c52ee973360b1a0f5b62c6f">More...</a><br /></td></tr>
+<tr class="separator:ga104e7f3e1c52ee973360b1a0f5b62c6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga375616fdd1d6084ff2732eb9ee8fd070"><td class="memItemLeft" align="right" valign="top"><a class="el" href="RGFW_8h.html#abd148a2771096e4a671e32f51be8f69f">RGFWDEF</a> <a class="el" href="RGFW_8h.html#a5875a02d0e0e933b07afbe7b20941c0b">RGFW_bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Window__management.html#ga375616fdd1d6084ff2732eb9ee8fd070">RGFW_window_isHoldingMouse</a> (<a class="el" href="RGFW_8h.html#a2520d2d7f43e5df60edeed92733c1de6">RGFW_window</a> *win)</td></tr>
+<tr class="memdesc:ga375616fdd1d6084ff2732eb9ee8fd070"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the mouse is currently held by RGFW.  <a href="group__Window__management.html#ga375616fdd1d6084ff2732eb9ee8fd070">More...</a><br /></td></tr>
+<tr class="separator:ga375616fdd1d6084ff2732eb9ee8fd070"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gad0dd15469e9f8648345b52f0f9c0c023"><td class="memItemLeft" align="right" valign="top"><a class="el" href="RGFW_8h.html#abd148a2771096e4a671e32f51be8f69f">RGFWDEF</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Window__management.html#gad0dd15469e9f8648345b52f0f9c0c023">RGFW_window_hide</a> (<a class="el" href="RGFW_8h.html#a2520d2d7f43e5df60edeed92733c1de6">RGFW_window</a> *win)</td></tr>
 <tr class="memdesc:gad0dd15469e9f8648345b52f0f9c0c023"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hides the window from view.  <a href="group__Window__management.html#gad0dd15469e9f8648345b52f0f9c0c023">More...</a><br /></td></tr>
 <tr class="separator:gad0dd15469e9f8648345b52f0f9c0c023"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -934,6 +942,20 @@ Functions</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">#define RGFW_BOOL_DEFINED</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac2decf3c977508eea8d869ea6d621950" name="ac2decf3c977508eea8d869ea6d621950"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2decf3c977508eea8d869ea6d621950">&#9670;&#160;</a></span>RGFW_C89</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define RGFW_C89</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1391,7 +1413,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define RGFWDEF&#160;&#160;&#160;inline</td>
+          <td class="memname">#define RGFWDEF&#160;&#160;&#160;__inline</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -2532,6 +2554,7 @@ Functions</h2></td></tr>
 <p >&lt; the window is fullscreen by default</p>
 <p >&lt; the window is transparent (only properly works on X11 and MacOS, although it's meant for for windows)</p>
 <p >center the window on the screen</p>
+<p >&lt; use raw mouse mouse on window creation</p>
 <p >scale the window to the screen</p>
 <p >the window is hidden</p>
 <p >&lt; maximize the window on creation</p>
@@ -2635,6 +2658,7 @@ Functions</h2></td></tr>
 
 <p>codes for the event types that can be sent </p>
 <p >&lt; no event has been sent</p>
+<p >&lt; a key has been pressed</p>
 <p >&lt; a key has been released</p>
 <p >key event note the code of the key pressed is stored in RGFW_event.key.value !!Keycodes defined at the bottom of the RGFW_HEADER part of this file!!</p>
 <p >while a string version is stored in RGFW_event.key.valueString</p>
